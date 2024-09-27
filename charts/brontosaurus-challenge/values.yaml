@@ -3,12 +3,12 @@
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
-
+year: 2024
 image:
   repository: gcr.io/google-containers/busybox
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: "latest"
 
 imagePullSecrets: []
 nameOverride: "broken-brontosaurus"
@@ -21,7 +21,6 @@ podSecurityContext: {}
 
 securityContext: {}
 
-  
 resources: 
   requests:
     memory: "32Mi"
@@ -43,20 +42,3 @@ command:
         exit 1
       fi
     done
-
-# Additional env Deployment definition.
-envs: 
-  - name: YEAR
-    value: "2024"
-
-# Additional volumeMounts on the output Deployment definition.
-volumeMounts: []
-# - name: foo
-#   mountPath: "/etc/foo"
-#   readOnly: true
-
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}

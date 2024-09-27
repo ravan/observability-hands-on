@@ -1,0 +1,8 @@
+questions:
+  - variable: year
+    label: "Year"
+    type: string
+    default: "2024"
+    description: "What year are we in?"
+    required: true
+    group: General
