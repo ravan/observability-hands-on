@@ -3,6 +3,19 @@ entries:
   brontosaurus-challenge:
   - apiVersion: v2
     appVersion: 1.16.1
+    created: "2024-09-27T15:36:25.860967299Z"
+    description: A Helm chart for Broken Brontosaurus Challenge
+    digest: d3f88fe345ca6abc9d23f9cec115c7f4ef397508236d18abe1747cac7d2d92b3
+    keywords:
+    - challenge
+    - observability
+    name: brontosaurus-challenge
+    type: application
+    urls:
+    - brontosaurus-challenge-0.1.3.tgz
+    version: 0.1.3
+  - apiVersion: v2
+    appVersion: 1.16.1
     created: "2024-09-27T15:14:30.038191245Z"
     description: A Helm chart for Broken Brontosaurus Challenge
     digest: 0f0544077b881f15235a8cd0d819bbd594544798320cbc5c45f2ec55c385c733
@@ -24,4 +37,4 @@ entries:
     urls:
     - brontosaurus-challenge-0.1.0.tgz
     version: 0.1.0
-generated: "2024-09-27T15:14:30.038200493Z"
+generated: "2024-09-27T15:36:25.860982417Z"
