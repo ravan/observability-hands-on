@@ -1,4 +1,6 @@
-# Helm Chart Repository
+# Basic Suse Observability Challenges
 
-Basic Suse Observability Challenge chart.
+## Prerequisites
 
+- [Taskfile](https://taskfile.dev/installation/)
+- [Helm](https://helm.sh/docs/intro/install/)
