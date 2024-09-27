@@ -33,7 +33,7 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           env: 
            - name: YEAR
-             value: "{{.Values.year}}"
+             value: '{{.Values.year}}'
           command:
             {{- toYaml .Values.command | nindent 12 }}
 

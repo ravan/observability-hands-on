@@ -34,11 +34,11 @@ command:
   - "-c"
   - |
     while true; do
-      if [ \$YEAR -lt -65000000 ]; then
+      if [ $YEAR -lt -65000000 ]; then
         echo "I am a brontosaurus"
         sleep 5
       else
-        echo "It's the year \$YEAR, I am long extinct..."
+        echo "It's the year $YEAR, I am long extinct..."
         exit 1
       fi
     done
