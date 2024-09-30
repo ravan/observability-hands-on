@@ -37,4 +37,23 @@ entries:
     urls:
     - brontosaurus-challenge-0.1.0.tgz
     version: 0.1.0
-generated: "2024-09-30T08:56:59.773270862Z"
+  dino-shop:
+  - apiVersion: v1
+    appVersion: 0.3.6
+    created: "2024-09-30T09:32:19.807503539Z"
+    description: A Helm chart for Dino Shop
+    digest: 91516e6ca1415c627e09b57a5b6f1737b9f94321319d87a032a46bfaf20f7b4c
+    name: dino-shop
+    urls:
+    - dino-shop-0.3.6.tgz
+    version: 0.3.6
+  - apiVersion: v1
+    appVersion: 0.3.5
+    created: "2024-09-30T09:32:19.627631346Z"
+    description: A Helm chart for Dino Shop
+    digest: c4fc4f1175f779d4c9d3597888d35e387352eb2742a2491e444d0b2388aefe82
+    name: dino-shop
+    urls:
+    - dino-shop-0.3.5.tgz
+    version: 0.3.5
+generated: "2024-09-30T09:32:19.80751976Z"
