@@ -49,9 +49,9 @@ entries:
     version: 0.3.6
   - apiVersion: v1
     appVersion: 0.3.5
-    created: "2024-09-30T12:51:37.731039+02:00"
+    created: "2024-09-30T13:02:05.688141+02:00"
     description: A Helm chart for Dino Shop
-    digest: ba900e958b011068c1b70845425c3418b20125e49dff3182fe15f8a8b2361559
+    digest: 9b332759c6961cbcfd99acf75058d7d9d10d8b77f15b520864b38e88c0be5de0
     name: dino-shop
     urls:
     - https://ravan.github.io/observability-hands-on/dino-shop-0.3.5.tgz
