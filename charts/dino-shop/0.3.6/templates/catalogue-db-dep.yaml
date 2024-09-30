@@ -1,0 +1,43 @@
+{{- if .Values.catalogue.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalogue-db
+  labels:
+    {{- include "component.common.labels" ("catalogue-db") | nindent 4 }}
+    {{- include "dino-shop.common.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "component.common.labels" ("catalogue-db") | nindent 6 }}
+  template:
+    metadata:
+      {{- include "component.custom.annotations" .Values.catalogueDB | nindent 6 }}
+
+      labels:
+        {{- include "component.common.labels" ("catalogue-db") | nindent 8 }}
+        domain: business
+        job: catalogue-db
+        mongodb: "true"
+    spec:
+      serviceAccountName: dino-shop
+      containers:
+      - name: catalogue-db
+        image: "{{ .Values.catalogueDB.image.repository }}:{{ .Values.catalogueDB.image.tag }}"
+        env:
+          - name: MYSQL_ROOT_PASSWORD
+            value: fake_password
+          - name: MYSQL_DATABASE
+            value: dinosdb
+        resources:
+        {{- toYaml .Values.catalogueDB.resources | nindent 10 }}
+        ports:
+        - name: mysql
+          containerPort: 3306
+        securityContext:
+          runAsUser: 999
+          runAsGroup: 999
+          readOnlyRootFilesystem: false
+      priorityClassName: {{ template "priority-class-name" . }}
+{{- end }}

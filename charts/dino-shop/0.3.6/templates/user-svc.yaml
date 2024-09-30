@@ -1,0 +1,19 @@
+{{- if .Values.user.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user
+  labels:
+    {{- include "component.common.labels" ("user") | nindent 4 }}
+    {{- include "dino-shop.common.labels" . | nindent 4 }}
+    domain: business
+    extra-identifier: user
+spec:
+  ports:
+    # the port that this service should serve on
+  - port: 80
+    targetPort: 80
+  selector:
+    {{- include "component.common.labels" ("user") | nindent 4 }}
+{{- end }}

@@ -1,0 +1,9 @@
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: dino-shop-1000
+  labels: { { - include "dino-shop.common.labels" . | nindent 4 } }
+value: 1000
+preemptionPolicy: Never
+globalDefault: false
+description: 'Priority class for higher priority pods of this app.'

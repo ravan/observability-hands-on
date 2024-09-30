@@ -1,0 +1,19 @@
+{{- if .Values.shipping.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq
+  labels:
+    {{- include "component.common.labels" ("rabbitmq") | nindent 4 }}
+    {{- include "dino-shop.common.labels" . | nindent 4 }}
+    domain: business
+    extra-identifier: rabbitmq
+spec:
+  ports:
+    # the port that this service should serve on
+  - port: 5672
+    targetPort: 5672
+  selector:
+    {{- include "component.common.labels" ("rabbitmq") | nindent 4 }}
+{{- end }}

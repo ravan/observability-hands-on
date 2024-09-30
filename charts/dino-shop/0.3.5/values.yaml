@@ -1,0 +1,305 @@
+###################
+# SOckShop values #
+###################
+global:
+  annotations: {}
+# nameOverride -- A name to prepend the Helm resources, if not specified the name of the chart is used.
+nameOverride: ""
+all:
+  # all.securityCapabilitiesDisabled -- Disable securtyContext capabilities operations.
+  securityCapabilitiesDisabled: false
+  java:
+    # all.java.options -- The common JAVA_OPTS for all Java microservices.
+    options: -Xms512m -Xmx512m -XX:PermSize=32m -XX:MaxPermSize=64m -XX:+UseG1GC -Djava.security.egd=file:/dev/urandom
+
+#######
+# CARTS DOMAIN
+#######
+cartsDB:
+  annotations:
+    monitor.kubernetes-v2.stackstate.io/pod-cpu-throttling: '{"enabled":false}'
+  # cartsDB.resources -- Resource allocation for `carts-db` pods.
+  resources:
+    limits:
+      cpu: 100m
+      memory: 100Mi
+    requests:
+      cpu: 100m
+      memory: 100Mi
+
+carts:
+  enabled: true
+  # carts.version -- Custom label (version) value for `carts` pods.
+  version: 1
+  annotations: {}
+  # carts.resources -- Resource allocation for `carts` pods.
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1000Mi
+    requests:
+      cpu: 500m
+      memory: 1000Mi
+  # carts.affinity -- Affinity settings for carts pods.
+  affinity: {}
+
+#######
+# CATALOGUE DOMAIN
+#######
+catalogueDB:
+  image:
+    # catalogueDB.image.repository -- The container repository for `catalogue-db` images.
+    repository: quay.io/stackstate/weaveworksdemo-catalogue-db
+    # catalogueDB.image.tag -- The container image tag.
+    tag: 0.3.1
+  annotations:
+    monitor.kubernetes-v2.stackstate.io/pod-cpu-throttling: '{"enabled":false}'
+    # catalogueDB.resources -- Resource allocation for `catalogue-db` pods.
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 500Mi
+    requests:
+      cpu: 500m
+      memory: 250Mi
+
+catalogue:
+  enabled: true
+  # catalogue.resources -- Resource allocation for `catalogue` pods.
+  resources:
+    limits:
+      cpu: 100m
+      memory: 200Mi
+    requests:
+      cpu: 100m
+      memory: 200Mi
+  # catalogue.annotations -- Custom annotations for `catalogue` pods.
+  annotations:
+    vcs: https://gitlab.com/stackvista/demo/microservices-demo/catalogue/-/commit/e9e5338599dbda30366b38d00794c34aaa4221a7
+  image:
+    # catalogue.image.repository -- The container repository for `catalogue` images.
+    repository: quay.io/stackstate/weaveworksdemo-catalogue
+    # catalogue.image.tag -- The container image tag.
+    tag: 0.3.5
+  demoScenarioSimulation:
+    # catalogue.demoScenarioSimulation.enabled -- Whether the k8s demo scenario should be enabled.
+    enabled: false
+    # catalogue.demoScenarioSimulation.schedule -- The cron schedule to trigger the k8s demo scenario.
+    schedule:
+      # catalogue.demoScenarioSimulation.schedule.failure -- The cron schedule to trigger the faulty k8s demo scenario.
+      failure: "0 * * * *"
+      # catalogue.demoScenarioSimulation.schedule.fix -- The cron schedule to fix the faulty k8s demo scenario.
+      fix: "30 * * * *"
+
+#######
+# FRONTEND DOMAIN
+#######
+frontend:
+  enabled: true
+  image:
+    # frontend.image.repository -- The container repository for `frontend` images.
+    repository: quay.io/stackstate/weaveworksdemo-front-end
+    # frontend.image.tag -- The container image tag.
+    tag: 0.3.13
+  # frontend.replicas -- The number or replicas of `frontend` deployment.
+  replicas: 1
+  annotations: {}
+  # frontend.resources -- Resource allocation for `frontend` pods.
+  resources:
+    limits:
+      cpu: 300m
+      memory: 1000Mi
+    requests:
+      cpu: 200m
+      memory: 1000Mi
+  components:
+    catalogueHost: catalogue
+    cartsHost: carts
+    ordersHost: orders
+    userHost: user
+
+ingress:
+  # ingress.replicas -- The number or replicas of `ingress` deployment.
+  replicas: 1
+  annotations: {}
+  # ingress.resources -- Resource allocation for `ingress` pods.
+  resources:
+    limits:
+      cpu: 300m
+      memory: 1000Mi
+    requests:
+      cpu: 200m
+      memory: 1000Mi
+
+loadgen:
+  # loadgen.replicas -- Whether the `loadgen` should be deployed.
+  enabled: true
+  # loadgen.replicas -- The number or replicas of `loadgen` deployment.
+  replicas: 1
+  image:
+    # loadgen.image.repository -- The container repository for `loadgen` images.
+    repository: quay.io/stackstate/loadgen
+    # loadgen.image.tag -- The container image tag.
+    tag: master-f65782ce
+  annotations: {}
+  # loadgen.resources -- Resource allocation for `loadgen` pods.
+  resources:
+    limits:
+      cpu: 100m
+      memory: 100Mi
+    requests:
+      cpu: 100m
+      memory: 100Mi
+
+sessionDB:
+  annotations: {}
+  # sessionDB.resources -- Resource allocation for `session-db` pods.
+  limits:
+    cpu: 100m
+    memory: 100Mi
+  requests:
+    cpu: 100m
+    memory: 100Mi
+
+#######
+# ORDERS DOMAIN
+#######
+ordersDB:
+  annotations: {}
+  # ordersDB.resources -- Resource allocation for `orders-db` pods.
+  resources:
+    limits:
+      cpu: 100m
+      memory: 100Mi
+    requests:
+      cpu: 100m
+      memory: 100Mi
+
+orders:
+  enabled: false
+  image:
+    # orders.image.repository -- The container repository for `orders` images.
+    repository: quay.io/stackstate/weaveworksdemo-orders
+    # orders.image.tag -- The container image tag.
+    tag: master
+  # orders.shippingPriority -- whatever it means.
+  shippingPriority: 0
+  # orders.orderPriority -- whatever it means.
+  orderPriority: 0
+  # orders.backorderPriority -- whatever it means.
+  backorderPriority: 0
+  components:
+    # orders.shippingHost -- Address to the shipping service
+    shippingHost: shipping
+    # orders.paymentHost -- Address to the payment service
+    paymentHost: payment
+  annotations: {}
+  # orders.resources -- Resource allocation for `orders` pods.
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1000Mi
+    requests:
+      cpu: 500m
+      memory: 1000Mi
+
+#######
+# PAYMENT DOMAIN
+#######
+payment:
+  enabled: false
+  annotations: {}
+  # payment.resources -- Resource allocation for `payment` pods.
+  resources:
+    limits:
+      cpu: 100m
+      memory: 100Mi
+    requests:
+      cpu: 100m
+      memory: 100Mi
+  ingress:
+    # payment.ingress.enabled -- Whether to deploy Ingress resource for payment service
+    enabled: false
+    ingressClassName: ingress-nginx
+    hostname: ""
+    tls: false
+    annotations: {}
+
+#######
+# SHIPPING DOMAIN
+#######
+queueMaster:
+  annotations: {}
+  # queueMaster.resources -- Resource allocation for `queue-master` pods.
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1000Mi
+    requests:
+      cpu: 500m
+      memory: 1000Mi
+
+rabbitmq:
+  annotations: {}
+  # rabbitmq.resources -- Resource allocation for `rabbitmq` pods.
+  resources:
+    limits:
+      cpu: 100m
+      memory: 200Mi
+    requests:
+      cpu: 100m
+      memory: 200Mi
+
+
+shipping:
+  enabled: false
+  annotations: {}
+  # shipping.resources -- Resource allocation for `shipping` pods.
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1000Mi
+    requests:
+      cpu: 500m
+      memory: 1000Mi
+  ingress:
+    # shipping.ingress.enables -- Whether to deploy Ingress resource for shipping service
+    enabled: false
+    ingressClassName: ingress-nginx
+    hostname: ""
+    tls: false
+    annotations: {}
+
+#######
+# USER DOMAIN
+#######
+userDB:
+  annotations: {}
+  # userDB.resources -- Resource allocation for `user-db` pods.
+  resources:
+    limits:
+      cpu: 100m
+      memory: 100Mi
+    requests:
+      cpu: 100m
+      memory: 100Mi
+
+user:
+  annotations: {}
+  enabled: true
+  # user.resources -- Resource allocation for `user` pods.
+  limits:
+    cpu: 300m
+    memory: 1000Mi
+  requests:
+    cpu: 100m
+    memory: 400Mi
+
+# priority -- priority for the custom PriorityClass
+priority: 1000000000
+
+scc:
+  # scc.enabled -- Create `SecurityContextConstraints` resource to manage Openshift security constraints for Stackstate.
+  enabled: false
+  # scc.extraServiceAccounts -- Extraccounts from the same namespace to add to SecurityContextConstraints users.
+  extraServiceAccounts: []
