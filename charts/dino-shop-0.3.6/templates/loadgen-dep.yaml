@@ -33,7 +33,7 @@ spec:
         - "--address"
         - "http://ingress"
         resources:
-        {{- toYaml .Values.ingress.resources | nindent 10 }}
+        {{- toYaml .Values.loadgen.resources | nindent 10 }}
         securityContext:
           runAsUser: 10001
       priorityClassName: dino-shop-1000

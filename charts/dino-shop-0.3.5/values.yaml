@@ -19,13 +19,13 @@ cartsDB:
   annotations:
     monitor.kubernetes-v2.stackstate.io/pod-cpu-throttling: '{"enabled":false}'
   # cartsDB.resources -- Resource allocation for `carts-db` pods.
-  resources:
-    limits:
-      cpu: 100m
-      memory: 100Mi
-    requests:
-      cpu: 100m
-      memory: 100Mi
+  # resources:
+  #   limits:
+  #     cpu: 100m
+  #     memory: 100Mi
+  #   requests:
+  #     cpu: 100m
+  #     memory: 100Mi
 
 carts:
   enabled: true
@@ -35,11 +35,11 @@ carts:
   # carts.resources -- Resource allocation for `carts` pods.
   resources:
     limits:
-      cpu: 500m
-      memory: 1000Mi
+      cpu: 300m
+      memory: 500Mi
     requests:
-      cpu: 500m
-      memory: 1000Mi
+      cpu: 100m
+      memory: 200Mi
   # carts.affinity -- Affinity settings for carts pods.
   affinity: {}
 
@@ -57,11 +57,11 @@ catalogueDB:
     # catalogueDB.resources -- Resource allocation for `catalogue-db` pods.
   resources:
     limits:
-      cpu: 1000m
-      memory: 500Mi
-    requests:
       cpu: 500m
       memory: 250Mi
+    requests:
+      cpu: 50m
+      memory: 50Mi
 
 catalogue:
   enabled: true
@@ -72,7 +72,7 @@ catalogue:
       memory: 200Mi
     requests:
       cpu: 100m
-      memory: 200Mi
+      memory: 100Mi
   # catalogue.annotations -- Custom annotations for `catalogue` pods.
   annotations:
     vcs: https://gitlab.com/stackvista/demo/microservices-demo/catalogue/-/commit/e9e5338599dbda30366b38d00794c34aaa4221a7
@@ -81,15 +81,7 @@ catalogue:
     repository: quay.io/stackstate/weaveworksdemo-catalogue
     # catalogue.image.tag -- The container image tag.
     tag: 0.3.5
-  demoScenarioSimulation:
-    # catalogue.demoScenarioSimulation.enabled -- Whether the k8s demo scenario should be enabled.
-    enabled: false
-    # catalogue.demoScenarioSimulation.schedule -- The cron schedule to trigger the k8s demo scenario.
-    schedule:
-      # catalogue.demoScenarioSimulation.schedule.failure -- The cron schedule to trigger the faulty k8s demo scenario.
-      failure: "0 * * * *"
-      # catalogue.demoScenarioSimulation.schedule.fix -- The cron schedule to fix the faulty k8s demo scenario.
-      fix: "30 * * * *"
+
 
 #######
 # FRONTEND DOMAIN
@@ -110,26 +102,13 @@ frontend:
       cpu: 300m
       memory: 1000Mi
     requests:
-      cpu: 200m
-      memory: 500Mi
+      cpu: 100m
+      memory: 300Mi
   components:
     catalogueHost: catalogue
     cartsHost: carts
     ordersHost: orders
     userHost: user
-
-ingress:
-  # ingress.replicas -- The number or replicas of `ingress` deployment.
-  replicas: 1
-  annotations: {}
-  # ingress.resources -- Resource allocation for `ingress` pods.
-  resources:
-    limits:
-      cpu: 300m
-      memory: 1000Mi
-    requests:
-      cpu: 200m
-      memory: 1000Mi
 
 loadgen:
   # loadgen.replicas -- Whether the `loadgen` should be deployed.
@@ -158,8 +137,8 @@ sessionDB:
     cpu: 100m
     memory: 100Mi
   requests:
-    cpu: 100m
-    memory: 100Mi
+    cpu: 50m
+    memory: 50Mi
 
 #######
 # ORDERS DOMAIN
@@ -172,8 +151,8 @@ ordersDB:
       cpu: 100m
       memory: 100Mi
     requests:
-      cpu: 100m
-      memory: 100Mi
+      cpu: 50m
+      memory: 50Mi
 
 orders:
   enabled: false
@@ -198,10 +177,10 @@ orders:
   resources:
     limits:
       cpu: 500m
-      memory: 1000Mi
+      memory: 500Mi
     requests:
-      cpu: 500m
-      memory: 1000Mi
+      cpu: 100m
+      memory: 300Mi
 
 #######
 # PAYMENT DOMAIN
@@ -212,10 +191,10 @@ payment:
   # payment.resources -- Resource allocation for `payment` pods.
   resources:
     limits:
-      cpu: 100m
-      memory: 100Mi
+      cpu: 200m
+      memory: 200Mi
     requests:
-      cpu: 100m
+      cpu: 99m
       memory: 100Mi
   ingress:
     # payment.ingress.enabled -- Whether to deploy Ingress resource for payment service
@@ -233,11 +212,11 @@ queueMaster:
   # queueMaster.resources -- Resource allocation for `queue-master` pods.
   resources:
     limits:
-      cpu: 500m
-      memory: 1000Mi
+      cpu: 300m
+      memory: 500Mi
     requests:
-      cpu: 500m
-      memory: 1000Mi
+      cpu: 100m
+      memory: 300Mi
 
 rabbitmq:
   annotations: {}
@@ -247,8 +226,8 @@ rabbitmq:
       cpu: 100m
       memory: 200Mi
     requests:
-      cpu: 100m
-      memory: 200Mi
+      cpu: 50m
+      memory: 100Mi
 
 
 shipping:
@@ -257,11 +236,11 @@ shipping:
   # shipping.resources -- Resource allocation for `shipping` pods.
   resources:
     limits:
-      cpu: 500m
-      memory: 1000Mi
+      cpu: 300m
+      memory: 500Mi
     requests:
-      cpu: 500m
-      memory: 1000Mi
+      cpu: 100m
+      memory: 300Mi
   ingress:
     # shipping.ingress.enables -- Whether to deploy Ingress resource for shipping service
     enabled: false
@@ -281,8 +260,8 @@ userDB:
       cpu: 100m
       memory: 100Mi
     requests:
-      cpu: 100m
-      memory: 100Mi
+      cpu: 50m
+      memory: 50Mi
 
 user:
   annotations: {}
@@ -290,10 +269,10 @@ user:
   # user.resources -- Resource allocation for `user` pods.
   limits:
     cpu: 300m
-    memory: 1000Mi
+    memory: 200Mi
   requests:
     cpu: 100m
-    memory: 400Mi
+    memory: 100Mi
 
 # priority -- priority for the custom PriorityClass
 priority: 1000000000
