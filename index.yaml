@@ -40,18 +40,18 @@ entries:
   dino-shop:
   - apiVersion: v1
     appVersion: 0.3.6
-    created: "2024-09-30T11:06:48.404519+02:00"
+    created: "2024-09-30T11:21:32.874761+02:00"
     description: A Helm chart for Dino Shop
-    digest: fde39592ba3b4be9cffd0a602d8a4f9a4eafe987eb2689379b6e3afa39f37e26
+    digest: 3c633774a685eaf1ae3dca7f22b4bc1dabb3be80e729397c35590a2e01af4290
     name: dino-shop
     urls:
     - dino-shop-0.3.6.tgz
     version: 0.3.6
   - apiVersion: v1
     appVersion: 0.3.5
-    created: "2024-09-30T08:47:19.647675953Z"
+    created: "2024-09-30T11:21:32.873379+02:00"
     description: A Helm chart for Dino Shop
-    digest: 84f5de121c40cb67f556089520983606ca0d0c92183ed27103be67cbb9da1972
+    digest: d4d5504da059cefbefad9e0b7e1239bf7c8c388be15b0147eb70ab3f6afca14b
     name: dino-shop
     urls:
     - dino-shop-0.3.5.tgz
