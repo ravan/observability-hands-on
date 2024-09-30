@@ -39,6 +39,15 @@ entries:
     version: 0.1.0
   dino-shop:
   - apiVersion: v1
+    appVersion: 0.3.6
+    created: "2024-09-30T08:56:59.773252528Z"
+    description: A Helm chart for Dino Shop
+    digest: 2b097787641b56665d08eb79644faa8288dfde829a042c06ad63af767ea9d187
+    name: dino-shop
+    urls:
+    - dino-shop-0.3.6.tgz
+    version: 0.3.6
+  - apiVersion: v1
     appVersion: 0.3.5
     created: "2024-09-30T08:47:19.647675953Z"
     description: A Helm chart for Dino Shop
@@ -47,4 +56,4 @@ entries:
     urls:
     - dino-shop-0.3.5.tgz
     version: 0.3.5
-generated: "2024-09-30T08:47:19.772473984Z"
+generated: "2024-09-30T08:56:59.773270862Z"
