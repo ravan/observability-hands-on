@@ -1,0 +1,42 @@
+version: '3'
+
+dotenv: ['.env']
+
+vars:
+  CLUSTER_NAME: lab-rav
+  LOCAL_CLUSTER: "true"
+  LOCAL_INSTANCE: '{{.CLUSTER_NAME}}'
+  KUBECONFIG_FILE: '{{ if eq .LOCAL_CLUSTER "true" }}$HOME/.lima/{{.LOCAL_INSTANCE}}/copied-from-guest/kubeconfig.yaml{{else}}{{.KUBECONFIG_FILE_PATH}}/{{.KUBECONFIG_FILE_NAME}}{{end}}'
+  KUBECONFIG: '--kubeconfig {{.KUBECONFIG_FILE}}'
+  
+includes:
+  labs:
+    taskfile: ./labs
+  
+tasks:
+  shell-env:
+    desc: run 'eval $(task shell-env)' to setup local kubectx
+    cmds:
+      - echo "export KUBECONFIG={{.KUBECONFIG_FILE}}"
+  start-vm:
+    cmds:
+      - limactl start {{.CLUSTER_NAME}}
+  stop-vm:
+    cmds:
+      - limactl stop {{.CLUSTER_NAME}}
+  create-vm:
+    cmds:
+      - limactl start --name {{.CLUSTER_NAME}} --disk 25 --cpus 2 --memory 4 template://k3s --tty=false
+      - echo "run 'eval $(task shell-env)' to setup local kubectx"
+  destroy-vm:
+    cmds:
+      - limactl delete {{.CLUSTER_NAME}} --force --tty=false
+      - limactl list
+  deploy-observability-agent:
+    cmds:
+      - echo "Agent will sent data to '{{.CLUSTER_NAME}}' pipeline on server '{{.STS_URL}}'"
+      - helm upgrade --install {{.KUBECONFIG}} --namespace suse-observability --create-namespace --set-string 'stackstate.apiKey'="{{.STS_API_KEY}}" --set-string 'stackstate.cluster.name'="{{.CLUSTER_NAME}}" --set-string 'stackstate.url'="{{.STS_URL}}/receiver/stsAgent" --set 'logsAgent.enabled'='true' --set 'nodeAgent.skipKubeletTLSVerify'=true suse-observability-agent suse-observability/suse-observability-agent 
+
+   
+
+    

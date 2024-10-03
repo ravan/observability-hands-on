@@ -1,0 +1,60 @@
+version: '3'
+includes:
+  brontosaurus:
+    taskfile: ./broken-brontosaurus
+
+  # forgetasaurus:
+  #   taskfile: ./forgetasaurus
+
+vars:
+  NAMESPACE: museum
+  bashChecks: |
+        set -e
+        if [ -z "{{.CHART}}" ]; then
+          echo "CHART variable required"
+          exit 1
+        fi
+        if [ -z "{{.RELEASE}}" ]; then
+          echo "RELEASE variable required"
+          exit 1
+        fi
+        if [ ! -d "./charts/{{.CHART}}" ]; then
+          echo "Chart directory does not exist"
+          exit 1
+        fi
+
+tasks:
+  # Internal
+  uninstall-chart:
+    internal: true
+    silent: true
+    cmds:
+      - |
+        {{.bashChecks}}
+        cd ./charts/{{.CHART}}
+        helm uninstall --namespace {{.NAMESPACE}} {{.RELEASE}} {{.KUBECONFIG}}
+    vars:
+      CHART: '{{default "" .CHART}}'
+      NAMESPACE: '{{default "default" .NAMESPACE}}'
+      RELEASE: '{{default "" .RELEASE}}'
+
+  install-chart:
+    internal: true
+    silent: true
+    cmds:
+      - |
+        {{.bashChecks}}
+        BASE_CMD="helm upgrade --install {{.KUBECONFIG}} --namespace {{.NAMESPACE}} --create-namespace"
+        cd ./charts/{{.CHART}}
+        {{if .VALUES}}
+        cat <<EOF | $BASE_CMD -f - {{.RELEASE}} .
+        {{.VALUES}}
+        EOF
+        {{else}}
+        $BASE_CMD {{.RELEASE}} .
+        {{end}}
+    vars:
+      CHART: '{{default "" .CHART}}'
+      NAMESPACE: '{{default "default" .NAMESPACE}}'
+      RELEASE: '{{default "" .RELEASE}}'
+      VALUES: '{{default "" .VALUES}}'

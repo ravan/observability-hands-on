@@ -1,0 +1,30 @@
+version: '3'
+
+vars:
+  CHART: brontosaurus-challenge
+  RELEASE: brontosaurus
+  
+tasks:
+
+  assignment:
+    cmds:
+      - open ./broken-brontosaurus/assignment.md
+
+  setup: 
+    cmds:
+      - task: :install-chart
+        vars:
+          VALUES: |
+                  year: "2024"
+
+  resolve:
+    cmds:
+      - task: :install-chart
+        vars:
+          VALUES: |
+                  year: "-70000000"
+
+  teardown:
+    cmds:
+      - task: :uninstall-chart
+ 
