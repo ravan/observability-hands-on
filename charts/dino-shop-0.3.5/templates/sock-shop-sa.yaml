@@ -1,5 +1,0 @@
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: dino-shop
-  labels: {{- include "dino-shop.common.labels" . | nindent 4 }}

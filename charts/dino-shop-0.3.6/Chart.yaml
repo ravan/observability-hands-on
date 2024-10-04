@@ -1,5 +1,0 @@
-apiVersion: v1
-description: A Helm chart for Dino Shop
-name: dino-shop
-version: 0.3.6
-appVersion: 0.3.6

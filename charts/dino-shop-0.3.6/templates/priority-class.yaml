@@ -1,9 +1,0 @@
-apiVersion: scheduling.k8s.io/v1
-kind: PriorityClass
-metadata:
-  name: {{ template "priority-class-name" . }}
-  labels: {{- include "dino-shop.common.labels" . | nindent 4 }}
-value: {{ .Values.priority }}
-preemptionPolicy: Never
-globalDefault: false
-description: 'Priority class for all pods of this app.'
