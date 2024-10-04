@@ -7,7 +7,7 @@ Install the challenge,
 task labs:forgetasaurus:setup
 ```
 
-> [!Timing]
+> [!IMPORTANT]
 >  Takes about 70 seconds from deployment to healthy state.
 
 The Memory-Eating Dinosaur
@@ -36,10 +36,10 @@ _"Forgetasaurus: Your memory’s worst nightmare!"_
 task labs:forgetasaurus:trigger
 ```
 
-> [!Timing]
+> [!IMPORTANT]
 >  Takes about 3 minutes from deployment to unhealthy state.
 
-> [!TODO]
+> [!NOTE]
 > Learning platform instructions
 > Suse Observability steps
 
@@ -58,7 +58,7 @@ The Forgetasaurus is running in the `museum-forgetasaurus` namespace in the down
 First steps in troubleshooting
 ==============================
 
-> [!TODO]
+> [!NOTE]
 > Learning platform instructions
 > Suse Observability steps
 
@@ -66,7 +66,7 @@ First steps in troubleshooting
 Diagnosis
 =========
 
-> [!TODO]
+> [!NOTE]
 > Learning platform instructions
 > Suse Observability steps
 
@@ -74,7 +74,7 @@ Diagnosis
 Fixing the issue
 ================
 
-> [!TODO]
+> [!NOTE]
 > Learning platform instructions
 > Suse Observability steps
 
