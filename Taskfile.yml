@@ -35,7 +35,7 @@ tasks:
   deploy-observability-agent:
     cmds:
       - echo "Agent will sent data to '{{.CLUSTER_NAME}}' pipeline on server '{{.STS_URL}}'"
-      - helm upgrade --install {{.KUBECONFIG}} --namespace suse-observability --create-namespace --set-string 'stackstate.apiKey'="{{.STS_API_KEY}}" --set-string 'stackstate.cluster.name'="{{.CLUSTER_NAME}}" --set-string 'stackstate.url'="{{.STS_URL}}/receiver/stsAgent" --set 'logsAgent.enabled'='true' --set 'nodeAgent.skipKubeletTLSVerify'=true suse-observability-agent suse-observability/suse-observability-agent 
+      - helm upgrade --install {{.KUBECONFIG}} --namespace suse-observability --create-namespace --set-string 'stackstate.apiKey'="{{.STS_API_KEY}}" --set-string 'stackstate.cluster.name'="{{.CLUSTER_NAME}}" --set-string 'stackstate.url'="{{.STS_URL}}/receiver/stsAgent" --set 'logsAgent.enabled'='true' --set 'clusterAgent.config.topology.collectionInterval'=45 --set 'nodeAgent.skipKubeletTLSVerify'=true suse-observability-agent suse-observability/suse-observability-agent 
 
    
 

@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tyrannodb
+  labels:
+    app: tyrannodb
+    {{- include "common.labels" . | nindent 4 }}
+    app.kubernetes.io/version: "0.3.5"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tyrannodb
+  template:
+    metadata:
+      labels:
+        app: tyrannodb
+      annotations:
+        checksum/config: '{{ include (print $.Template.BasePath "/tyrannodb-cm.yaml") . | sha256sum}}'
+    spec:
+      containers:
+      - name: tyrannodb
+        image: {{.Values.image}}
+        env:
+        - name: CONFIG_FILE
+          value: /etc/app/config.toml
+        ports:
+        - containerPort: 8080
+        resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/app
+      volumes:
+      - name: config-volume
+        configMap:
+          name: tyrannodb-config
+          items:
+          - key: config.toml
+            path: config.toml

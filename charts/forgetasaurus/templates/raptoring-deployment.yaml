@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: raptoring-service
+  labels:
+    app: raptoring
+    {{- include "common.labels" . | nindent 4 }}
+    {{ if eq .Values.hungry "yes" }}
+    app.kubernetes.io/version: "0.3.6"
+    {{ else }}
+    app.kubernetes.io/version: "0.3.5"
+    {{ end }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: raptoring
+  template:
+    metadata:
+      labels:
+        app: raptoring
+      annotations:
+        checksum/config: '{{ include (print $.Template.BasePath "/raptoring-cm.yaml") . | sha256sum}}'
+    spec:
+      containers:
+      - name: raptoring-service
+        image: {{.Values.image}}
+        env:
+        - name: CONFIG_FILE
+          value: /etc/app/config.toml
+        ports:
+        - containerPort: 8080
+        resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/app
+      volumes:
+      - name: config-volume
+        configMap:
+          name: raptoring-config
+          items:
+          - key: config.toml
+            path: config.toml

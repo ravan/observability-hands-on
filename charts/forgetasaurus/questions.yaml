@@ -1,0 +1,8 @@
+questions:
+  - variable: hungry
+    label: "Hungry"
+    type: string
+    default: "no"
+    description: "Is the Forgetasaurus hungry?"
+    required: true
+    group: General

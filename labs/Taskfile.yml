@@ -3,47 +3,65 @@ includes:
   brontosaurus:
     taskfile: ./broken-brontosaurus
 
-  # forgetasaurus:
-  #   taskfile: ./forgetasaurus
+  forgetasaurus:
+    taskfile: ./forgetasaurus
 
 vars:
   NAMESPACE: museum
-  bashChecks: |
+  repoCheck: |
         set -e
-        if [ -z "{{.CHART}}" ]; then
+        if [ -z "$CHART" ]; then
           echo "CHART variable required"
           exit 1
         fi
-        if [ -z "{{.RELEASE}}" ]; then
-          echo "RELEASE variable required"
+        if [ ! -d "./charts/$CHART" ]; then
+          echo "Chart directory does not exist"
           exit 1
         fi
-        if [ ! -d "./charts/{{.CHART}}" ]; then
-          echo "Chart directory does not exist"
+  releaseCheck: |
+        if [ -z "$RELEASE" ]; then
+          echo "RELEASE variable required"
           exit 1
         fi
 
 tasks:
+  lint-chart:
+    internal: false
+    silent: true
+    desc: "task labs:lint -- <chartname>"
+    cmds:
+      - |
+        CHART="{{.CHART}}"
+        RELEASE="{{.RELEASE}}"
+        {{.repoCheck}}
+        cd ./charts/{{.CHART}}
+        helm lint . 
+    vars:
+      CHART: '{{.CLI_ARGS}}'
+
   # Internal
+
   uninstall-chart:
     internal: true
     silent: true
     cmds:
       - |
-        {{.bashChecks}}
+        CHART="{{.CHART}}"
+        RELEASE="{{.RELEASE}}"
+        {{.repoCheck}}
+        {{.releaseCheck}}
         cd ./charts/{{.CHART}}
         helm uninstall --namespace {{.NAMESPACE}} {{.RELEASE}} {{.KUBECONFIG}}
-    vars:
-      CHART: '{{default "" .CHART}}'
-      NAMESPACE: '{{default "default" .NAMESPACE}}'
-      RELEASE: '{{default "" .RELEASE}}'
 
   install-chart:
     internal: true
     silent: true
     cmds:
       - |
-        {{.bashChecks}}
+        CHART="{{.CHART}}"
+        RELEASE="{{.RELEASE}}"
+        {{.repoCheck}}
+        {{.releaseCheck}}
         BASE_CMD="helm upgrade --install {{.KUBECONFIG}} --namespace {{.NAMESPACE}} --create-namespace"
         cd ./charts/{{.CHART}}
         {{if .VALUES}}
@@ -54,7 +72,4 @@ tasks:
         $BASE_CMD {{.RELEASE}} .
         {{end}}
     vars:
-      CHART: '{{default "" .CHART}}'
-      NAMESPACE: '{{default "default" .NAMESPACE}}'
-      RELEASE: '{{default "" .RELEASE}}'
       VALUES: '{{default "" .VALUES}}'

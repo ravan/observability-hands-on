@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: raptoring
+  labels:
+    app: raptoring
+    {{- include "common.labels" . | nindent 4 }}
+    {{ if eq .Values.hungry "yes" }}
+    app.kubernetes.io/version: "0.3.6"
+    {{ else }}
+    app.kubernetes.io/version: "0.3.5"
+    {{ end }}
+spec:
+  selector:
+    app: raptoring
+  ports:
+    - protocol: TCP
+      port: 80      # Service port
+      targetPort: 8080 # Container port
+  type: ClusterIP     # Internal service within the Kubernetes cluster

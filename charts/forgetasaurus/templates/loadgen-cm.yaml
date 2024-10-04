@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: loadgen-config
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+    app.kubernetes.io/version: "0.3.5"
+data:
+  script.ts: |
+    import http from 'k6/http';
+    import { sleep, check } from 'k6';
+
+    // Configuration options for load testing
+    export let options = {
+        // Define stages to simulate ramp-up and ramp-down load
+        stages: [
+            { duration: '30s', target: 5 }, // ramp-up to 20 users
+            { duration: '1m', target: 10 },  // ramp-up to 50 users
+            { duration: '24h', target: 15 }, // ramp-up to 100 users
+            { duration: '30s', target: 10 }, // ramp-down to 50 users
+            { duration: '30s', target: 0 },  // ramp-down to 0 users
+        ],
+    };
+
+    // Define base URL of Brontoclient (Frontend service)
+    const BASE_URL = 'http://brontoclient';
+
+    // Define endpoints to test
+    const endpoints = {
+        list: `${BASE_URL}/list`,         // List endpoint triggers load on Raptoring Service
+        save: `${BASE_URL}/save`,         // Save endpoint triggers load as well
+    };
+
+    export default function () {
+        // Simulate heavy "list" endpoint usage
+        let listRes = http.get(endpoints.list);
+        check(listRes, { 'Status was 200': (r) => r.status === 200 });
+
+        // Simulate occasional "save" endpoint usage
+        if (__ITER % 10 === 0) {
+            let saveRes = http.get(endpoints.save);
+            check(saveRes, { 'Status was 200': (r) => r.status === 200 });
+        }
+
+        // Simulate delay between requests
+        sleep(1);  // 1 second sleep simulates the delay between user interactions
+    }
+
+    

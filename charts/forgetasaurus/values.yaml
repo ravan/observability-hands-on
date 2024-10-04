@@ -1,0 +1,9 @@
+hungry: 'no'
+image: ravan/mockroservice:0.0.8
+resources:
+  requests:
+    memory: '8Mi'
+    cpu: '70m'
+  limits:
+    memory: '10Mi'
+    cpu: '100m'

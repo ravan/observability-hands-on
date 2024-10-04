@@ -84,3 +84,4 @@ task labs:< name of challenge>:teardown
 ## Available challenges
 
 - [Broken Brontosaurus](./labs/broken-brontosaurus/assignment.md)
+- [Forgetasaurus](./labs/forgetasaurus/assignment.md)

@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: raptoring-config
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+    {{ if eq .Values.hungry "yes" }}
+    app.kubernetes.io/version: "0.3.6"
+    {{ else }}
+    app.kubernetes.io/version: "0.3.5"
+    {{ end }}
+data:
+  config.toml: |
+    port = 8080
+    address = "0.0.0.0"
+
+    {{ if eq .Values.hungry "yes" }}
+    [memstress]
+    enabled = true
+    delay = "45s"
+    memSize = "5 mb"
+    growthTime = "45s"
+
+    [stressng]
+    enabled = false
+    args = ["--cpu", "1", "--cpu-load", "1"]
+    {{ end }}
+
+    [[endpoints]]
+    uri = "/fetch-data"
+    delay = "<2ms>"
+    errorOnCall = 0
+    body.status = "ok"
+    body.msg = "data fetched from TyrannoDB"
+
+    [[endpoints.routes]]
+    uri = "tyrannodb/get"
+    delay = "2ms"
+    stopOnFail = true

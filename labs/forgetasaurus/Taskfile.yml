@@ -1,0 +1,45 @@
+version: '3'
+
+vars:
+  CHART_FORGET: forgetasaurus
+  RELEASE_FORGET: "{{.CHART_FORGET}}"
+  NAMESPACE_FORGET: museum-forgetasaurus
+  
+tasks:
+
+  assignment:
+    cmds:
+      - open ./forgetasaurus/assignment.md
+
+  setup: 
+    cmds:
+      - task: :install-chart
+        vars:
+          RELEASE: "{{.RELEASE_FORGET}}"
+          CHART: "{{.CHART_FORGET}}" 
+          NAMESPACE: "{{.NAMESPACE_FORGET}}" 
+          VALUES: |
+                  hungry: "no"
+
+  resolve:
+    deps: 
+      - setup
+
+  trigger:
+    cmds:
+      - task: :install-chart
+        vars:
+          RELEASE: "{{.RELEASE_FORGET}}"
+          CHART: "{{.CHART_FORGET}}"
+          NAMESPACE: "{{.NAMESPACE_FORGET}}" 
+          VALUES: |
+                  hungry: "yes"
+
+  teardown:
+    cmds:
+      - task: :uninstall-chart
+        vars:
+          RELEASE: "{{.RELEASE_FORGET}}"
+          CHART: "{{.CHART_FORGET}}"
+          NAMESPACE: "{{.NAMESPACE_FORGET}}" 
+ 
