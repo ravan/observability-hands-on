@@ -56,5 +56,17 @@ entries:
     urls:
     - https://ravan.github.io/observability-hands-on/dino-shop-0.3.5.tgz
     version: 0.3.5
-generated: "2024-09-30T08:56:59.773270862Z"
-
+  forgetasaurus:
+  - apiVersion: v2
+    created: "2024-10-04T10:12:05.07194388Z"
+    description: A Helm chart for Forgetasaurus Challenge
+    digest: 24f54100e6ba0604cdeba73a7e2e687e86ead4120e1a2d74f0f65b0fb12cf8af
+    keywords:
+    - challenge
+    - observability
+    name: forgetasaurus
+    type: application
+    urls:
+    - forgetasaurus-0.1.0.tgz
+    version: 0.1.0
+generated: "2024-10-04T10:12:05.071959189Z"
