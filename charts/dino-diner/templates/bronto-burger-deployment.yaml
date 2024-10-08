@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bronto-burger
+  labels:
+    service: bronto-burger
+    {{- include "common.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: bronto-burger
+      {{- include "common.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+		{{- include "common.labels" . | nindent 8 }}
+        service: bronto-burger 
+      annotations:
+        checksum/config: '{{ include (print $.Template.BasePath "/bronto-burger-cm.yaml") . | sha256sum}}'
+    spec:
+      containers:
+      - name: bronto-burger
+        image: {{.Values.image}}
+        env:
+        - name: CONFIG_FILE
+          value: /etc/app/config.toml
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            memory: '8Mi'
+            cpu: '50m'
+          limits:
+            memory: '10Mi'
+            cpu: '55m'
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/app
+      volumes:
+      - name: config-volume
+        configMap:
+          name: bronto-burger-cm
+          items:
+          - key: config.toml
+            path: config.toml

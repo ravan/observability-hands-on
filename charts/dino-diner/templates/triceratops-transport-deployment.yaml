@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: triceratops-transport
+  labels:
+    service: triceratops-transport
+    {{- include "common.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: triceratops-transport
+      {{- include "common.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+		{{- include "common.labels" . | nindent 8 }}
+        service: triceratops-transport 
+      annotations:
+        checksum/config: '{{ include (print $.Template.BasePath "/triceratops-transport-cm.yaml") . | sha256sum}}'
+    spec:
+      containers:
+      - name: triceratops-transport
+        image: {{.Values.image}}
+        env:
+        - name: CONFIG_FILE
+          value: /etc/app/config.toml
+        ports:
+        - containerPort: 8080
+        {{ if eq .Values.napping "yes" }}
+        resources:
+          requests:
+            memory: '26Mi'
+            cpu: '14m'
+          limits:
+            memory: '28Mi'
+            cpu: '16m' 
+        {{ else }}
+        resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+        {{ end }}
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/app
+      volumes:
+      - name: config-volume
+        configMap:
+          name: triceratops-transport-cm
+          items:
+          - key: config.toml
+            path: config.toml

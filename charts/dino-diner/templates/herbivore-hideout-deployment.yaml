@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: herbivore-hideout
+  labels:
+    service: herbivore-hideout
+    {{- include "common.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: herbivore-hideout
+      {{- include "common.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+		{{- include "common.labels" . | nindent 8 }}
+        service: herbivore-hideout 
+      annotations:
+        checksum/config: '{{ include (print $.Template.BasePath "/herbivore-hideout-cm.yaml") . | sha256sum}}'
+    spec:
+      containers:
+      - name: herbivore-hideout
+        image: {{.Values.image}}
+        env:
+        - name: CONFIG_FILE
+          value: /etc/app/config.toml
+        ports:
+        - containerPort: 8080
+        resources:
+          {{- toYaml .Values.resources | nindent 12 }} 
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/app
+      volumes:
+      - name: config-volume
+        configMap:
+          name: herbivore-hideout-cm
+          items:
+          - key: config.toml
+            path: config.toml

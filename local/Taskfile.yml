@@ -1,45 +1,45 @@
 version: '3'
 
-dotenv: ['.env']
-
-vars:
-  CLUSTER_NAME: lab-rav
-  LOCAL_CLUSTER: "true"
-  LOCAL_INSTANCE: '{{.CLUSTER_NAME}}'
-  KUBECONFIG_FILE: '{{ if eq .LOCAL_CLUSTER "true" }}$HOME/.lima/{{.LOCAL_INSTANCE}}/copied-from-guest/kubeconfig.yaml{{else}}{{.KUBECONFIG_FILE_PATH}}/{{.KUBECONFIG_FILE_NAME}}{{end}}'
-  KUBECONFIG: '--kubeconfig {{.KUBECONFIG_FILE}}'
-  
-includes:
-  labs:
-    taskfile: ./labs
-  local: 
-    taskfile: ./local
-    dir: ./local
-  
 tasks:
   shell-env:
-    desc: run 'eval $(task shell-env)' to setup local kubectx
+    desc: run 'eval $(local:task shell-env)' to setup local kubectx
     cmds:
       - echo "export KUBECONFIG={{.KUBECONFIG_FILE}}"
+
   start-vm:
     cmds:
       - limactl start {{.CLUSTER_NAME}}
+
   stop-vm:
     cmds:
       - limactl stop {{.CLUSTER_NAME}}
+  
+  ssh:
+    cmds:
+      - limactl shell {{.CLUSTER_NAME}}
+
   create-vm:
     cmds:
       - limactl start --name {{.CLUSTER_NAME}} --disk 25 --cpus 2 --memory 4 template://k3s --tty=false
-      - echo "run 'eval $(task shell-env)' to setup local kubectx"
+      - echo 'To setup local kubectl context run, eval $(task local:shell-env)'
+
   destroy-vm:
     cmds:
       - limactl delete {{.CLUSTER_NAME}} --force --tty=false
       - limactl list
+
   deploy-observability-agent:
     cmds:
       - echo "Agent will sent data to '{{.CLUSTER_NAME}}' pipeline on server '{{.STS_URL}}'"
       - helm upgrade --install {{.KUBECONFIG}} --namespace suse-observability --create-namespace --set-string 'stackstate.apiKey'="{{.STS_API_KEY}}" --set-string 'stackstate.cluster.name'="{{.CLUSTER_NAME}}" --set-string 'stackstate.url'="{{.STS_URL}}/receiver/stsAgent" --set 'logsAgent.enabled'='true' --set 'clusterAgent.config.topology.collectionInterval'=45 --set 'nodeAgent.skipKubeletTLSVerify'=true suse-observability-agent suse-observability/suse-observability-agent 
 
+  deploy-otel-agent:
+    cmds:
+      - kubectl create namespace open-telemetry {{.KUBECONFIG}} --dry-run=client -o yaml | kubectl apply {{.KUBECONFIG}} -f -
+      - kubectl create secret generic open-telemetry-collector --namespace open-telemetry --from-literal=CLUSTER_NAME='{{.CLUSTER_NAME}}' --from-literal=API_KEY='{{.STS_API_KEY}}' --from-literal="OTEL_ENDPOINT={{.OTEL_ENDPOINT}}" --dry-run=client -o yaml | kubectl apply {{.KUBECONFIG}} -f -
+      - helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
+      - helm repo update
+      - helm upgrade --install {{.KUBECONFIG}} --create-namespace --values ./config/otel-collector.yaml --namespace open-telemetry opentelemetry-collector open-telemetry/opentelemetry-collector
    
 
     

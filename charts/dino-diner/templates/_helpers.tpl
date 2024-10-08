@@ -1,11 +1,4 @@
 {{/*
-Create chart name and version as used by the chart label.
-*/}}
-{{- define "common.chart" -}}
-{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
-{{- end }}
-
-{{/*
 Expand the name of the chart.
 */}}
 {{- define "common.name" -}}
@@ -30,15 +23,25 @@ If release name contains chart name it will be used as a full name.
 {{- end }}
 {{- end }}
 
+{{/*
+Create chart name and version as used by the chart label.
+*/}}
+{{- define "common.chart" -}}
+{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
+{{- end }}
 
 {{/*
 Common labels
 */}}
 {{- define "common.labels" -}}
 helm.sh/chart: {{ include "common.chart" . }}
-{{ include "brontosaurus-challenge.selectorLabels" . }}
+{{ include "common.selectorLabels" . }}
+{{- if eq .Values.napping "yes"}}
+app.kubernetes.io/version: "0.1.1"
+{{- else }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
@@ -49,4 +52,15 @@ Selector labels
 {{- define "common.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "common.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "common.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create }}
+{{- default (include "common.fullname" .) .Values.serviceAccount.name }}
+{{- else }}
+{{- default "default" .Values.serviceAccount.name }}
+{{- end }}
 {{- end }}

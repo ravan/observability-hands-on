@@ -1,0 +1,45 @@
+version: '3'
+
+vars:
+  CHART_DINER: dino-diner
+  RELEASE_DINER: "{{.CHART_DINER}}"
+  NAMESPACE_DINER: museum-dino-diner
+  
+tasks:
+
+  assignment:
+    cmds:
+      - open ./dino-diner/assignment.md
+
+  setup: 
+    cmds:
+      - task: :install-chart
+        vars:
+          RELEASE: "{{.RELEASE_DINER}}"
+          CHART: "{{.CHART_DINER}}" 
+          NAMESPACE: "{{.NAMESPACE_DINER}}" 
+          VALUES: |
+                  napping: "no"
+
+  resolve:
+    deps: 
+      - setup
+
+  trigger:
+    cmds:
+      - task: :install-chart
+        vars:
+          RELEASE: "{{.RELEASE_DINER}}"
+          CHART: "{{.CHART_DINER}}"
+          NAMESPACE: "{{.NAMESPACE_DINER}}" 
+          VALUES: |
+                  napping: "yes"
+
+  teardown:
+    cmds:
+      - task: :uninstall-chart
+        vars:
+          RELEASE: "{{.RELEASE_DINER}}"
+          CHART: "{{.CHART_DINER}}"
+          NAMESPACE: "{{.NAMESPACE_DINER}}" 
+ 

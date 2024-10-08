@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pteropost
+  labels:
+    service: pteropost
+    {{- include "common.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: pteropost
+      {{- include "common.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+		    {{- include "common.labels" . | nindent 8 }}
+        service: pteropost 
+      annotations:
+        checksum/config: '{{ include (print $.Template.BasePath "/pteropost-cm.yaml") . | sha256sum}}'
+    spec:
+      containers:
+      - name: pteropost
+        image: {{.Values.image}}
+        env:
+        - name: CONFIG_FILE
+          value: /etc/app/config.toml
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            memory: '8Mi'
+            cpu: '70m'
+          limits:
+            memory: '10Mi'
+            cpu: '80m'
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/app
+      volumes:
+      - name: config-volume
+        configMap:
+          name: pteropost-cm
+          items:
+          - key: config.toml
+            path: config.toml

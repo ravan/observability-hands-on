@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: bronto-burger
+  labels:
+    service: bronto-burger
+    {{- include "common.labels" . | nindent 4 }}
+spec:
+  selector:
+    service: bronto-burger
+	{{- include "common.selectorLabels" . | nindent 4 }}
+  ports:
+    - protocol: TCP
+      port: 80      # Service port
+      targetPort: 8080 # Container port
+  type: ClusterIP     # Internal service within the Kubernetes cluster

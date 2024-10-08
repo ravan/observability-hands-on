@@ -5,6 +5,9 @@ includes:
 
   forgetasaurus:
     taskfile: ./forgetasaurus
+  
+  dino-diner:
+    taskfile: ./dino-diner
 
 vars:
   NAMESPACE: museum
@@ -25,6 +28,17 @@ vars:
         fi
 
 tasks:
+  generate-chart:
+    silent: false
+    desc: |
+          Define services in file `gen.toml.mockroservices`, then call
+          task labs:generate-chart -- <chart name>
+    cmds:
+      - echo "Generating chart '{{.CHART}}' to ./charts"
+      - docker run --rm --name mockroservice -v .:/workspace ravan/mockroservice:0.0.11 /app/sim -c /workspace/gen.toml.mockroservices generate -o /workspace/charts --name {{.CHART}}
+    vars:
+      CHART: "{{.CLI_ARGS}}"
+
   lint-chart:
     internal: false
     silent: true

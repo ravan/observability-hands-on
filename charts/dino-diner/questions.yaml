@@ -1,0 +1,8 @@
+questions:
+- variable: napping
+  label: "Napping"
+  type: string
+  default: "no"
+  description: "Is the lazy dino waiter sleeping again?"
+  required: true
+  group: General

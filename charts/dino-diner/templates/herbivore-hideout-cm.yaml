@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: herbivore-hideout-cm
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+data:
+  config.toml: |
+     
+     
+     # Herbivore Hideout
+     serviceName = "Herbivore Hideout"
+     [[endpoints]]
+     uri = "/grazing"
+     delay = "{{.Values.defaultLatency}}>"
+     body.status = "ok"
+     body.msg = "Herbivores grazing"
+     
+     [otel.trace]
+     enabled = {{.Values.traceEnabled}}
+     tracer-name = "herbivore-hideout"
+     http-endpoint = "{{.Values.otelHttpEndpoint}}"  
+     insecure = true
+     

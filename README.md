@@ -27,6 +27,7 @@ Change the content with details about your environment.
 CLUSTER_NAME=lab-test  # Suse Observability Kubernetes StackPack instance name
 STS_URL=https://xxx-lab.app.stackstate.io
 STS_API_KEY=tmnpPT69Z
+OTEL_ENDPOINT=otel-xxx-lab.app.stackstate.io:443
 ```
 
 ## Local Cluster
@@ -36,23 +37,26 @@ Use the predefined tasks to manage the vm
 
 ```bash
 # create the vm
-task create-vm
+task local:create-vm
 
 # Install Suse Observability Agent
-task deploy-observability-agent
+task local:deploy-observability-agent
+
+# Install Open Telemetry Agent
+task local:deploy-otel-agent
 
 # stop the vm
-task stop-vm
+task local:stop-vm
 
 # start the vm
-task start-vm
+task local:start-vm
 
 # setup local kubectx 
-eval $(task shell-env)
+eval $(task local:shell-env)
 kubectl get nodes
 
 # destroy the vm
-task destroy-vm
+task local:destroy-vm
 
 ```
 
@@ -66,14 +70,17 @@ task labs:< name of challenge>:assignment
 
 # The inststructions will generally lead to 3 setups you need to perform in environment
 
-# 1) Setup the challenge
-task labs:< name of challenge>:setup
+# 1) Setup the challenge.
+task labs:<name of challenge>:setup 
+
+# 1.1) Sometimes there will be a trigger 
+task labs:<name of challenge>:trigger
 
 # 2) Resolve the challenge
-task labs:< name of challenge>:resolve
+task labs:<name of challenge>:resolve
 
 # 3) Tear down the challenge
-task labs:< name of challenge>:teardown
+task labs:<name of challenge>:teardown
 
 ```
 
@@ -85,3 +92,4 @@ task labs:< name of challenge>:teardown
 
 - [Broken Brontosaurus](./labs/broken-brontosaurus/assignment.md)
 - [Forgetasaurus](./labs/forgetasaurus/assignment.md)
+- [Dino Diner](./labs/dino-diner/assignment.md)

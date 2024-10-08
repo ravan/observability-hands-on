@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: t-rex-tracker
+  labels:
+    service: t-rex-tracker
+    {{- include "common.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: t-rex-tracker
+      {{- include "common.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+		{{- include "common.labels" . | nindent 8 }}
+        service: t-rex-tracker 
+      annotations:
+        checksum/config: '{{ include (print $.Template.BasePath "/t-rex-tracker-cm.yaml") . | sha256sum}}'
+    spec:
+      containers:
+      - name: t-rex-tracker
+        image: {{.Values.image}}
+        env:
+        - name: CONFIG_FILE
+          value: /etc/app/config.toml
+        ports:
+        - containerPort: 8080
+        resources:
+          {{- toYaml .Values.resources | nindent 12 }} 
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/app
+      volumes:
+      - name: config-volume
+        configMap:
+          name: t-rex-tracker-cm
+          items:
+          - key: config.toml
+            path: config.toml

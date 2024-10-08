@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: loadgen-config
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+data:
+  script.ts: |
+    import http from 'k6/http';
+    import { sleep, check } from 'k6';
+
+    // Configuration options for load testing
+    export let options = {
+        // Define stages to simulate ramp-up and ramp-down load
+        stages: [
+            { duration: '30s', target: 2 }, // ramp-up to 20 users
+            { duration: '1m', target: 4 },  // ramp-up to 50 users
+            { duration: '1m', target: 6 },  // ramp-up to 50 users
+            { duration: '24h', target: 6 }, // ramp-up to 100 users
+            { duration: '30s', target: 1 }, // ramp-down to 50 users
+            { duration: '30s', target: 0 },  // ramp-down to 0 users
+        ],
+    };
+
+    // Define base URL of Brontoclient (Frontend service)
+    const BASE_URL = 'http://bronto-burger';
+
+    // Define endpoints to test
+    const endpoints = {
+        order: `${BASE_URL}/order`,        
+
+    };
+
+    export default function () {
+        // Simulate heavy "list" endpoint usage
+        let res = http.get(endpoints.order);
+        check(res, { 'Status was 200': (r) => r.status === 200 });
+
+        // Simulate delay between requests
+        sleep(1);  // 1 second sleep simulates the delay between user interactions
+    }
+
+      

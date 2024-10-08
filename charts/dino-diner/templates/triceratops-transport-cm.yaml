@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: triceratops-transport-cm
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+data:
+  config.toml: |
+     # Triceratops Transport Service - Latency Culprit
+     serviceName = "Triceratops Transport"
+     # Stress simulation: Apply memory stress causing latency issues
+     [memstress]
+     enabled = false
+     delay = "10s"
+     memSize = "15%" # Memory usage grows
+     growthTime = "5s"
+     
+     # Stress the CPU as well to simulate overloading
+     [stressng]
+     {{ if eq .Values.napping "yes" }}
+     enabled = true
+     {{ else }}
+     enabled = false
+     {{ end}}
+     delay = "10s"
+     args = ["--cpu", "1", "--cpu-load", "1"]
+     
+     # Define transport route endpoint with added latency
+     [[endpoints]]
+     uri = "/route"
+     {{ if eq .Values.napping "yes" }}
+     delay = "1s" # Simulate variable delay before processing
+     errorOnCall = 5 # Errors on every 5th call
+     {{ else }}
+     delay = "100ms"
+     errorOnCall = 0
+     {{ end }}
+     body.status = "delayed"
+     body.msg = "Triceratops Transport is slow today!"
+
+     [otel.trace]
+     enabled = {{.Values.traceEnabled}}
+     tracer-name = "triceratops-transport"
+     http-endpoint = "{{.Values.otelHttpEndpoint}}"  
+     insecure = true 
+     

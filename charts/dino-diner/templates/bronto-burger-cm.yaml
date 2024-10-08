@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bronto-burger-cm
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+data:
+  config.toml: |
+     # Bronto Burger
+     serviceName = "Bronto Burger"
+     [[endpoints]]
+     uri = "/order"
+     delay = "{{.Values.defaultLatency}}"
+     body.status = "ok"
+     body.msg = "Order received"
+     
+     [[endpoints.routes]]
+     uri = "PteroPost/send"
+     delay = "{{.Values.defaultLatency}}"  # Bronto Burger sends order details to PteroPost for communication with other services
+
+     [otel.trace]
+     enabled = {{.Values.traceEnabled}}
+     tracer-name = "bronto-burger"
+     http-endpoint = "{{.Values.otelHttpEndpoint}}"     
+     insecure = true
+     
