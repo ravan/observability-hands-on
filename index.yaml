@@ -37,6 +37,20 @@ entries:
     urls:
     - brontosaurus-challenge-0.1.0.tgz
     version: 0.1.0
+  dino-diner:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2024-10-09T17:10:06.799083614Z"
+    description: A Helm chart for dino-diner Mackroservices
+    digest: 30879cfa0b6c8023749141be6d8b24f59f3c0d8153c8ca79c0c73a18c2a2bf0d
+    keywords:
+    - challenge
+    - observability
+    name: dino-diner
+    type: application
+    urls:
+    - dino-diner-0.1.0.tgz
+    version: 0.1.0
   dino-shop:
   - apiVersion: v1
     appVersion: 0.3.6
@@ -69,4 +83,4 @@ entries:
     urls:
     - forgetasaurus-0.1.0.tgz
     version: 0.1.0
-generated: "2024-10-04T10:12:05.071959189Z"
+generated: "2024-10-09T17:10:06.932355664Z"
