@@ -1,0 +1,41 @@
+nodes:
+- _type: Monitor
+  arguments:
+    comparator: GT
+    failureState: DEVIATING
+    metric:
+      aliasTemplate: CPU Throttling for ${container} of ${pod_name}
+      query: 100 * sum by (cluster_name, namespace, pod_name, container) (container_cpu_throttled_periods{})
+        / sum by (cluster_name, namespace, pod_name, container) (container_cpu_elapsed_periods{})
+      unit: percent
+    threshold: 95.0
+    urnTemplate: urn:kubernetes:/${cluster_name}:${namespace}:pod/${pod_name}
+  description: |-
+    This monitor continuously checks if any pod reaches its CPU throttling
+    threshold, alerting you when usage approaches set limits. It ensures optimal performance
+    by preventing degradation and maintaining the reliability of applications within
+    the Kubernetes environment.
+  function: {{ get "urn:stackpack:common:monitor-function:threshold"  }}
+  id: -13
+  identifier: urn:custom:monitor:cpu-throttling-v2
+  intervalSeconds: 60
+  name: CPU Throttling V2
+  remediationHint: |-
+    Review the pod's resource requests and limits to ensure they are set appropriately.
+    [Show component configuration](/#/components/\{{ componentUrnForUrl \}}#configuration)
+    ## Adjust CPU Requests and Limits
+    If the CPU usage consistently hits the limit, consider increasing the CPU limit of the pod. <br/>
+    Edit the pod or deployment configuration file to modify the `resources.limits.cpu` and `resources.requests.cpu` as needed.
+    ```
+    resources:
+      requests:
+        cpu: "500m" # Adjust this value based on analysis
+      limits:
+        cpu: "1" # Adjust this value based on analysis
+    ```
+    If CPU throttling persists, consider horizontal pod autoscaling to distribute the workload across more pods, or adjust the cluster's node resources to meet the demands. Continuously monitor and fine-tune resource settings to optimize performance and prevent further throttling issues.
+  status: ENABLED
+  tags:
+  - cpu
+  - performance
+  - pod

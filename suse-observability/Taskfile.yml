@@ -11,60 +11,101 @@ vars:
     }
 
   OOB_MONITORS:
-    - urn:stackpack:prime-kubernetes:shared:monitor:http-response-time 
+    - urn:stackpack:prime-kubernetes:shared:monitor:http-response-time
+    - urn:stackpack:kubernetes-v2:shared:monitor:kubernetes-v2:pod-cpu-throttling
+    - urn:stackpack:kubernetes-v2:shared:monitor:kubernetes-v2:out-of-memory-containers
+
+  CUSTOM_MONITORS:
+    - urn:custom:monitor:cpu-throttling-v2
+    - urn:custom:monitor:out-of-memory-for-containers-v2
+    - urn:custom:monitor:http-response-time-v2
 
 tasks:
+
+  upload-custom-monitors:
+    silent: true
+    vars:
+      CM:
+        sh: find ./monitors -type f -name '*.yaml'
+    cmds:
+      - for: { var: CM }
+        cmd: sts monitor apply -f {{.ITEM}} -c {{.PROFILE}}
+  
+  delete-custom-monitors:
+    deps: ["update-cache"]
+    silent: true
+    cmds:
+      - for: { var: CUSTOM_MONITORS }
+        cmd: |
+            {{.GET_FIELD_FUNC}}
+            mId=$(getField '{{.ITEM}}' 'id')
+            if [ "${mId}" ]; then
+              sts monitor delete -i $mId -c {{.PROFILE}}
+              echo "   Identifier '{{.ITEM}}'."
+            else
+                echo "Monitor '{{.ITEM}}' not found."
+            fi
 
   disable-oob-monitors:
     deps: ["update-cache"]
     cmds:
       - for: { var: OOB_MONITORS }
-        task: disable-monitor 
+        task: toggle-monitor 
         vars:
           MONITOR: '{{.ITEM}}'
+          STATUS: "ENABLED"
+          ACTION: "disable"
 
   enable-oob-monitors:
     deps: ["update-cache"]
     cmds:
       - for: { var: OOB_MONITORS }
-        task: enable-monitor 
+        task: toggle-monitor 
         vars:
           MONITOR: '{{.ITEM}}'
-
+          STATUS: "DISABLED"
+          ACTION: "enable"
   
+  disable-custom-monitors:
+    deps: ["update-cache"]
+    cmds:
+      - for: { var: CUSTOM_MONITORS }
+        task: toggle-monitor 
+        vars:
+          MONITOR: '{{.ITEM}}'
+          STATUS: "ENABLED"
+          ACTION: "disable"
+
+  enable-custom-monitors:
+    deps: ["update-cache"]
+    cmds:
+      - for: { var: CUSTOM_MONITORS }
+        task: toggle-monitor 
+        vars:
+          MONITOR: '{{.ITEM}}'
+          STATUS: "DISABLED"
+          ACTION: "enable"
+
   # Internal 
-
-  disable-monitor:
-    silent: true
-    internal: true
-    cmds:
-      - |
-        {{.GET_FIELD_FUNC}}
-        status=$(getField '{{.MONITOR}}' 'status')
-        if [ $status = 'ENABLED' ]; then
-          mId=$(getField '{{.MONITOR}}' 'id')
-          sts monitor disable -i $mId -c {{.PROFILE}}
-          echo "   Identifier '{{.MONITOR}}'."
-        else
-          echo "Monitor '{{.MONITOR}}' is already disabled."
-        fi
-        echo $result
   
-  enable-monitor:
+  toggle-monitor:
     silent: true
     internal: true
     cmds:
       - |
         {{.GET_FIELD_FUNC}}
         status=$(getField '{{.MONITOR}}' 'status')
-        if [ $status = "DISABLED" ]; then
+        if [ $status = "{{.STATUS}}" ]; then
           mId=$(getField '{{.MONITOR}}' 'id')
-          sts monitor enable -i $mId -c {{.PROFILE}}
+          sts monitor {{.ACTION}} -i $mId -c {{.PROFILE}}
           echo "   Identifier '{{.MONITOR}}'."
         else
-          echo "Monitor '{{.MONITOR}}' is already enabled."
+          if [ $status = "" ]; then
+            echo "Monitor '{{.MONITOR}} not found'."
+          else
+            echo "Monitor '{{.MONITOR}}' is already in correct status."
+          fi
         fi
-        echo $result
     
   update-cache:
     internal: true
