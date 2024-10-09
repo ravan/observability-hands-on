@@ -1,3 +1,5 @@
 .env
 services.toml.mockroservices
 gen.toml.mockroservices
+suse-observability/.cache.json
+local/config/jaeger.yaml

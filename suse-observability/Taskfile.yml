@@ -1,0 +1,75 @@
+version: '3'
+
+dotenv: ['.env']
+
+vars:
+  PROFILE: instruqt
+  GET_FIELD_FUNC: |
+    getField() {
+      cmd="cat .cache.json | jq '.monitors[] | select(.identifier == \"$1\") | {id: .id, identifier: .identifier, status: .status}' | jq -r '.$2'"
+      echo $(eval $cmd)
+    }
+
+  OOB_MONITORS:
+    - urn:stackpack:prime-kubernetes:shared:monitor:http-response-time 
+
+tasks:
+
+  disable-oob-monitors:
+    deps: ["update-cache"]
+    cmds:
+      - for: { var: OOB_MONITORS }
+        task: disable-monitor 
+        vars:
+          MONITOR: '{{.ITEM}}'
+
+  enable-oob-monitors:
+    deps: ["update-cache"]
+    cmds:
+      - for: { var: OOB_MONITORS }
+        task: enable-monitor 
+        vars:
+          MONITOR: '{{.ITEM}}'
+
+  
+  # Internal 
+
+  disable-monitor:
+    silent: true
+    internal: true
+    cmds:
+      - |
+        {{.GET_FIELD_FUNC}}
+        status=$(getField '{{.MONITOR}}' 'status')
+        if [ $status = 'ENABLED' ]; then
+          mId=$(getField '{{.MONITOR}}' 'id')
+          sts monitor disable -i $mId -c {{.PROFILE}}
+          echo "   Identifier '{{.MONITOR}}'."
+        else
+          echo "Monitor '{{.MONITOR}}' is already disabled."
+        fi
+        echo $result
+  
+  enable-monitor:
+    silent: true
+    internal: true
+    cmds:
+      - |
+        {{.GET_FIELD_FUNC}}
+        status=$(getField '{{.MONITOR}}' 'status')
+        if [ $status = "DISABLED" ]; then
+          mId=$(getField '{{.MONITOR}}' 'id')
+          sts monitor enable -i $mId -c {{.PROFILE}}
+          echo "   Identifier '{{.MONITOR}}'."
+        else
+          echo "Monitor '{{.MONITOR}}' is already enabled."
+        fi
+        echo $result
+    
+  update-cache:
+    internal: true
+    silent: true
+    cmds:
+    - sts monitor list -c {{.PROFILE}} -o json > .cache.json
+      
+      
