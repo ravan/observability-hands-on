@@ -3,7 +3,7 @@ nameOverride: ''
 fullnameOverride: ''
 otelHttpEndpoint: opentelemetry-collector.open-telemetry.svc.cluster.local:4318
 traceEnabled: true
-image: ravan/mockroservice:0.0.14
+image: ravan/mockroservice:0.0.17
 defaultLatency: 5ms
 resources:
   requests:

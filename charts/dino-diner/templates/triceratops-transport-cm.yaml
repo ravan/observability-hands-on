@@ -23,20 +23,37 @@ data:
      enabled = false
      {{ end}}
      delay = "10s"
-     args = ["--cpu", "1", "--cpu-load", "1"]
+     args = ["--cpu", "1", "--cpu-load", "2"]
      
      # Define transport route endpoint with added latency
      [[endpoints]]
      uri = "/route"
      {{ if eq .Values.napping "yes" }}
      delay = "1s" # Simulate variable delay before processing
-     errorOnCall = 5 # Errors on every 5th call
+     errorOnCall = 250  # We process around 100 req/s. 
      {{ else }}
      delay = "100ms"
      errorOnCall = 0
      {{ end }}
      body.status = "delayed"
      body.msg = "Triceratops Transport is slow today!"
+
+     {{ if eq .Values.napping "yes" }}
+     [endpoints.errorLogging]
+     before = """
+     [[ $options := list "Sorry, folks! I stopped for a quick nap and, uh, lost track of time. Turns out, carrying plates and handling memory stress don’t mix!" "I’d be faster, but I had to swerve around a Stegosaurus traffic jam. You try maneuvering with three horns and a tray of Bronto Burgers!" "Blame it on my last software update—they said it would optimize my speed, but all I got was this CPU overload. Talk about a raw deal!" ]]
+     [[ $i := randInt 0 3 ]]
+     [[- index $options $i ]]
+     """
+     {{ else }}
+     [endpoints.logging]
+     logOnCall = 150  # Thats about 1 a minute 
+     before = """
+     [[ $options := list "Look at me go! I’m faster than a Velociraptor on roller skates today—food’s coming right up!" "No bottleneck can hold me back! I’ve got orders sizzling faster than a Pterodactyl on espresso." "I’m so quick, I think I just set a land speed record. Even the T-Rex can’t catch up to my service today!" ]]
+     [[ $i := randInt 0 3 ]]
+     [[- index $options $i ]]
+     """
+     {{ end }}
 
      [otel.trace]
      enabled = {{.Values.traceEnabled}}

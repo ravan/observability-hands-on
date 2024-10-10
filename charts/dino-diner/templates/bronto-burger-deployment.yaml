@@ -30,10 +30,10 @@ spec:
         resources:
           requests:
             memory: '8Mi'
-            cpu: '50m'
+            cpu: '30m'
           limits:
             memory: '10Mi'
-            cpu: '55m'
+            cpu: '35m'
         volumeMounts:
         - name: config-volume
           mountPath: /etc/app
