@@ -8,6 +8,12 @@ data:
   config.toml: |
      # Triceratops Transport Service - Latency Culprit
      serviceName = "Triceratops Transport"
+     logLevel = "info"
+
+     [logging]
+     logOnCall = 1
+     before = "Triceratops Transport is open for business"
+
      # Stress simulation: Apply memory stress causing latency issues
      [memstress]
      enabled = false
@@ -17,11 +23,7 @@ data:
      
      # Stress the CPU as well to simulate overloading
      [stressng]
-     {{ if eq .Values.napping "yes" }}
-     enabled = true
-     {{ else }}
-     enabled = false
-     {{ end}}
+     enabled = {{ if eq .Values.napping "yes" }}true{{ else }}false{{ end }}
      delay = "10s"
      args = ["--cpu", "1", "--cpu-load", "2"]
      
@@ -30,7 +32,7 @@ data:
      uri = "/route"
      {{ if eq .Values.napping "yes" }}
      delay = "1s" # Simulate variable delay before processing
-     errorOnCall = 250  # We process around 100 req/s. 
+     errorOnCall = 10 
      {{ else }}
      delay = "100ms"
      errorOnCall = 0
@@ -40,6 +42,7 @@ data:
 
      {{ if eq .Values.napping "yes" }}
      [endpoints.errorLogging]
+     logOnCall = 3  # 10 fails * 3 = 1 log per 30 seconds
      before = """
      [[ $options := list "Sorry, folks! I stopped for a quick nap and, uh, lost track of time. Turns out, carrying plates and handling memory stress don’t mix!" "I’d be faster, but I had to swerve around a Stegosaurus traffic jam. You try maneuvering with three horns and a tray of Bronto Burgers!" "Blame it on my last software update—they said it would optimize my speed, but all I got was this CPU overload. Talk about a raw deal!" ]]
      [[ $i := randInt 0 3 ]]
@@ -47,7 +50,7 @@ data:
      """
      {{ else }}
      [endpoints.logging]
-     logOnCall = 150  # Thats about 1 a minute 
+     logOnCall = 30 # the load test is 1 req/sec
      before = """
      [[ $options := list "Look at me go! I’m faster than a Velociraptor on roller skates today—food’s coming right up!" "No bottleneck can hold me back! I’ve got orders sizzling faster than a Pterodactyl on espresso." "I’m so quick, I think I just set a land speed record. Even the T-Rex can’t catch up to my service today!" ]]
      [[ $i := randInt 0 3 ]]

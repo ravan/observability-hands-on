@@ -3,12 +3,63 @@ nameOverride: ''
 fullnameOverride: ''
 otelHttpEndpoint: opentelemetry-collector.open-telemetry.svc.cluster.local:4318
 traceEnabled: true
-image: ravan/mockroservice:0.0.17
+image: ravan/mockroservice:0.0.21
 defaultLatency: 5ms
+
+# Default resources
 resources:
   requests:
     memory: '8Mi'
-    cpu: '10m'
+    cpu: '6m'
   limits:
     memory: '10Mi'
-    cpu: '15m'
+    cpu: '8m'
+
+# Default resources when tracing turned on
+resourcesWhenTracing:
+  requests:
+    memory: '8Mi'
+    cpu: '18m'
+  limits:
+    memory: '10Mi'
+    cpu: '20m'
+
+brontoResources:
+  requests:
+    memory: '9Mi'
+    cpu: '30m'
+  limits:
+    memory: '10Mi'
+    cpu: '35m'
+
+brontoResourcesWhenTracing:
+  requests:
+    memory: '9Mi'
+    cpu: '50m'
+  limits:
+    memory: '10Mi'
+    cpu: '55m'
+
+pteropostResources:
+    requests:
+      memory: '10Mi'
+      cpu: '70m'
+    limits:
+      memory: '12Mi'
+      cpu: '80m'
+
+pteropostResourcesWhenTracing:
+    requests:
+      memory: '10Mi'
+      cpu: '80m'
+    limits:
+      memory: '12Mi'
+      cpu: '90m'
+
+triceratopsResourcesWhenNapping:
+    requests:
+      memory: '26Mi'
+      cpu: '16m'
+    limits:
+      memory: '28Mi'
+      cpu: '18m' 

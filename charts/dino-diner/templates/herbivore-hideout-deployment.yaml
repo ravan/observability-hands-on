@@ -14,7 +14,7 @@ spec:
   template:
     metadata:
       labels:
-		{{- include "common.labels" . | nindent 8 }}
+		    {{- include "common.labels" . | nindent 8 }}
         service: herbivore-hideout 
       annotations:
         checksum/config: '{{ include (print $.Template.BasePath "/herbivore-hideout-cm.yaml") . | sha256sum}}'
@@ -27,8 +27,13 @@ spec:
           value: /etc/app/config.toml
         ports:
         - containerPort: 8080
+        {{ if .Values.traceEnabled}}
+        resources:
+          {{- toYaml .Values.resourcesWhenTracing | nindent 12 }}  
+        {{ else }}
         resources:
           {{- toYaml .Values.resources | nindent 12 }} 
+        {{ end }}
         volumeMounts:
         - name: config-volume
           mountPath: /etc/app

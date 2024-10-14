@@ -27,13 +27,13 @@ spec:
           value: /etc/app/config.toml
         ports:
         - containerPort: 8080
+        {{ if .Values.traceEnabled}}
         resources:
-          requests:
-            memory: '8Mi'
-            cpu: '30m'
-          limits:
-            memory: '10Mi'
-            cpu: '35m'
+          {{- toYaml .Values.brontoResourcesWhenTracing | nindent 12 }}  
+        {{ else }}
+        resources:
+          {{- toYaml .Values.brontoResources | nindent 12 }} 
+        {{ end }} 
         volumeMounts:
         - name: config-volume
           mountPath: /etc/app
