@@ -1,0 +1,8 @@
+questions:
+- variable: subscription
+  label: "Subscription"
+  type: string
+  default: "no"
+  description: "Has Certosaurus updated his subscription to DinoNews?"
+  required: true
+  group: General

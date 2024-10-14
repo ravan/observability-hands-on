@@ -1,0 +1,16 @@
+subscription: 'no'
+nameOverride: ''
+fullnameOverride: ''
+otelHttpEndpoint: opentelemetry-collector.open-telemetry.svc.cluster.local:4318
+traceEnabled: true
+image: ravan/mockroservice:0.0.22
+defaultLatency: 5ms
+
+# Default resources
+resources:
+  requests:
+    memory: '8Mi'
+    cpu: '6m'
+  limits:
+    memory: '10Mi'
+    cpu: '8m'

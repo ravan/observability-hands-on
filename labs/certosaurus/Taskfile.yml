@@ -1,0 +1,45 @@
+version: '3'
+
+vars:
+  CHART_CERT: certosaurus
+  RELEASE_CERT: "{{.CHART_CERT}}"
+  NAMESPACE_CERT: museum
+  
+tasks:
+
+  assignment:
+    cmds:
+      - open ./certosaurus/assignment.md
+
+  setup: 
+    cmds:
+      - task: :install-chart
+        vars:
+          RELEASE: "{{.RELEASE_CERT}}"
+          CHART: "{{.CHART_CERT}}" 
+          NAMESPACE: "{{.NAMESPACE_CERT}}" 
+          VALUES: |
+                  subscription: "no"
+
+  resolve:
+   cmds:
+      - task: :install-chart
+        vars:
+          RELEASE: "{{.RELEASE_CERT}}"
+          CHART: "{{.CHART_CERT}}" 
+          NAMESPACE: "{{.NAMESPACE_CERT}}" 
+          VALUES: |
+                  subscription: "yes"
+ 
+  trigger:
+    deps:
+      - setup
+
+  teardown:
+    cmds:
+      - task: :uninstall-chart
+        vars:
+          RELEASE: "{{.RELEASE_CERT}}"
+          CHART: "{{.CHART_CERT}}"
+          NAMESPACE: "{{.NAMESPACE_CERT}}" 
+ 

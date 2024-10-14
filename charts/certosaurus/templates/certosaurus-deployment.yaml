@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: certosaurus
+  labels:
+    service: certosaurus
+    {{- include "common.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: certosaurus
+      {{- include "common.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+		    {{- include "common.labels" . | nindent 8 }}
+        service: certosaurus 
+      annotations:
+        checksum/config: '{{ include (print $.Template.BasePath "/certosaurus-cm.yaml") . | sha256sum}}'
+        checksum/secret: '{{ include (print $.Template.BasePath "/certosaurus-secret.yaml") . | sha256sum}}'
+    spec:
+      containers:
+      - name: certosaurus
+        image: {{.Values.image}}
+        env:
+        - name: CONFIG_FILE
+          value: /etc/app/config.toml
+        ports:
+        - containerPort: 8080
+        resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/app
+        - name: cert-volume
+          mountPath: /certs/certificate.pem
+          subPath: certificate.pem
+        - name: key-volume
+          mountPath: /certs/key.pem
+          subPath: key.pem
+        - name: writable-certs
+          mountPath: /certs
+      volumes:
+      - name: config-volume
+        configMap:
+          name: certosaurus-cm
+          items:
+          - key: config.toml
+            path: config.toml
+      - name: cert-volume
+        secret:
+          secretName: certosaurus-secret
+          items:
+          - key: tls.crt
+            path: certificate.pem
+      - name: key-volume
+        secret:
+          secretName: certosaurus-secret
+          items:
+          - key: tls.key
+            path: key.pem
+      - name: writable-certs
+        emptyDir: {}

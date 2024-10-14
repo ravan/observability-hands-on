@@ -6,6 +6,9 @@ includes:
   forgetasaurus:
     taskfile: ./forgetasaurus
   
+  certosaurus:
+    taskfile: ./certosaurus
+  
   dino-diner:
     taskfile: ./dino-diner
 

@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: certosaurus-cm
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+data:
+  config.toml: |
+     # Certosaurus
+     serviceName = "Certosaurus"
+     [certificate]
+     enabled = true
+     delay = "30ms"
+     certificate = "/certs/certificate.pem"
+     key = "/certs/key.pem"
+     
+     
