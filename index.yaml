@@ -97,4 +97,18 @@ entries:
     urls:
     - forgetasaurus-0.1.0.tgz
     version: 0.1.0
-generated: "2024-10-14T19:07:18.734211967Z"
+  jurassic-net:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2024-10-15T11:17:31.485653093Z"
+    description: A Helm chart for JurassicNet Mackroservices
+    digest: c2c5384c7e3d4eb32b9f32add574fc2b5ddfeae0343b17050c5946353c3213d6
+    keywords:
+    - challenge
+    - observability
+    name: jurassic-net
+    type: application
+    urls:
+    - jurassic-net-0.1.0.tgz
+    version: 0.1.0
+generated: "2024-10-15T11:17:31.485675565Z"
