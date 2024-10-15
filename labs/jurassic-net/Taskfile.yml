@@ -1,15 +1,15 @@
 version: '3'
 
 vars:
-  CHART_CERT: certosaurus
+  CHART_CERT: jurassic-net
   RELEASE_CERT: "{{.CHART_CERT}}"
-  NAMESPACE_CERT: museum
+  NAMESPACE_CERT: museum-jurassic-net
   
 tasks:
 
   assignment:
     cmds:
-      - open ./certosaurus/assignment.md
+      - open ./jurassic-net/assignment.md
 
   setup: 
     cmds:

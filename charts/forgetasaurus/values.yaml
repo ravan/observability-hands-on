@@ -1,7 +1,7 @@
 nameOverride: ''
 fullnameOverride: ''
 hungry: 'no'
-image: ravan/mockroservice:0.0.21
+image: ravan/mockroservice:0.0.23
 resources:
   requests:
     memory: '8Mi'

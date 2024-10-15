@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: loadgen-config
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+data:
+  script.ts: |
+    import http from 'k6/http';
+
+    export const options = {
+    scenarios: {
+        constant_request_rate: {
+            executor: 'constant-arrival-rate',
+            rate: 1,
+            timeUnit: '10s', // 1 iterations per second, i.e. 1 RPS
+            duration: '48h',
+            preAllocatedVUs: 1, // how large the initial pool of VUs would be
+            maxVUs: 10, // if the preAllocatedVUs are not enough, we can initialize more
+        },
+    },
+    };
+
+    export default function () {
+    http.get('http://dns-raptor/route');
+    } 

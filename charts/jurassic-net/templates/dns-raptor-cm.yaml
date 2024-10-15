@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dns-raptor-cm
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+data:
+  config.toml: |
+     # DNS 
+     serviceName = "DNS Raptor"
+     [[endpoints]]
+     uri = "/route"
+     {{ if eq .Values.subscription "yes"}}
+     delay = "10ms"
+     {{ else }}
+     delay = "<1s>"
+     {{ end }}
+     body.status = "ok"
+     body.msg = "Routing request"
+
+     [[endpoints.routes]]
+     uri = "certosaurus/security-check"
+     {{ if eq .Values.subscription "yes"}}
+     delay = "10ms"
+     {{ else }}
+     delay = "1s"
+     {{ end }} 
+
+     
+     

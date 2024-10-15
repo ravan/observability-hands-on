@@ -1,6 +1,6 @@
 apiVersion: v2
-name: certosaurus
-description: A Helm chart for Certosaurus Mackroservices
+name: jurassic-net
+description: A Helm chart for JurassicNet Mackroservices
 type: application
 version: 0.1.0
 appVersion: "0.1.0"
