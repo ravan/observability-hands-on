@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stegostorage
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stegostorage
+  template:
+    metadata:
+      labels:
+        app: stegostorage
+    spec:
+      containers:
+      - name: stegostorage
+        image: redis:7.4.1
+        command: ["redis-server", "--save", "60", "1", "--stop-writes-on-bgsave-error", "no", "--dir", "/data"]
+        ports:
+        - containerPort: 6379
+        volumeMounts:
+        - mountPath: /data
+          name: stegostorage-storage
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "250m"
+      volumes:
+      - name: stegostorage-storage
+        persistentVolumeClaim:
+          claimName: stegostorage-pvc

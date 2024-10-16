@@ -9,6 +9,9 @@ includes:
   jurassic-net:
     taskfile: ./jurassic-net
   
+  stegostorage:
+    taskfile: ./stegostorage
+
   dino-diner:
     taskfile: ./dino-diner
 

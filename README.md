@@ -91,5 +91,13 @@ task labs:<name of challenge>:teardown
 ## Available challenges
 
 - [Broken Brontosaurus](./labs/broken-brontosaurus/assignment.md)
+    - Troubleshoot crashback loop
 - [Forgetasaurus](./labs/forgetasaurus/assignment.md)
+    - Troubleshoot memory issues
 - [Dino Diner](./labs/dino-diner/assignment.md)
+    - Troubleshoot slow responses using traces
+- [Jurassic Net](./labs/jurassic-net/assignment.md)
+    - Troubleshoot slow responses and 5xx http errors without traces
+- [Stegostorage](./labs/stegostorage/assignment.md)
+    - Troubleshoot pending state
+    

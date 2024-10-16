@@ -1,0 +1,8 @@
+questions:
+- variable: topClass
+  label: "Top Class Storage"
+  type: string
+  default: "no"
+  description: "Is the storage available of a top class?"
+  required: true
+  group: General

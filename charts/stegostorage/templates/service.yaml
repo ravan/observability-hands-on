@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: stegostorage
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+spec:
+  ports:
+  - port: 6379
+    targetPort: 6379
+  selector:
+    app: stegostorage
+  type: ClusterIP

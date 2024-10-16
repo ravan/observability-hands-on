@@ -31,7 +31,7 @@ tasks:
   deploy-observability-agent:
     cmds:
       - echo "Agent will sent data to '{{.CLUSTER_NAME}}' pipeline on server '{{.STS_URL}}'"
-      - helm upgrade --install {{.KUBECONFIG}} --namespace suse-observability --create-namespace --set-string 'stackstate.apiKey'="{{.STS_API_KEY}}" --set-string 'stackstate.cluster.name'="{{.CLUSTER_NAME}}" --set-string 'stackstate.url'="{{.STS_URL}}/receiver/stsAgent" --set 'logsAgent.enabled'='true' --set 'clusterAgent.config.topology.collectionInterval'=45 --set 'nodeAgent.skipKubeletTLSVerify'=true suse-observability-agent suse-observability/suse-observability-agent 
+      - helm upgrade --install {{.KUBECONFIG}} --namespace suse-observability --create-namespace --set-string 'stackstate.apiKey'="{{.STS_API_KEY}}" --set-string 'stackstate.cluster.name'="{{.CLUSTER_NAME}}" --set-string 'stackstate.url'="{{.STS_URL}}/receiver/stsAgent" --set 'clusterAgent.config.topology.collectionInterval'=45 --set 'nodeAgent.skipKubeletTLSVerify'=true suse-observability-agent suse-observability/suse-observability-agent 
 
   deploy-otel-agent:
     cmds:
@@ -41,5 +41,8 @@ tasks:
       - helm repo update
       - helm upgrade --install {{.KUBECONFIG}} --create-namespace --values ./config/otel-collector.yaml --namespace open-telemetry opentelemetry-collector open-telemetry/opentelemetry-collector
    
-
-    
+  deploy-observability-agent-extensions:
+      cmds:
+        - helm repo add sts-ext https://ravan.github.io/helm-charts
+        - helm upgrade --install --namespace suse-observability-extensions --create-namespace {{.KUBECONFIG}} --set-string 'apiKey'="{{.STS_API_KEY}}" --set-string 'clusterName'="{{.CLUSTER_NAME}}" --set-string 'serverUrl'="{{.STS_URL}}" suse sts-ext/stackstate-k8s-ext                            
+   

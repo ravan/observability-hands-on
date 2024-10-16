@@ -1,0 +1,9 @@
+apiVersion: v2
+name: stegostorage
+description: A Helm chart for Stegostorage Mackroservices
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+- challenge
+- observability

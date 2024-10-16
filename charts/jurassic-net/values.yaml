@@ -10,7 +10,7 @@ defaultLatency: 5ms
 resources:
   requests:
     memory: '8Mi'
-    cpu: '6m'
+    cpu: '4m'
   limits:
     memory: '10Mi'
-    cpu: '8m'
+    cpu: '6m'

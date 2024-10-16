@@ -1,0 +1,233 @@
+nodes:
+- id: -2001
+  identifier: urn:stackpack:custom:shared:monitor-function:pvc-unbound-func
+  name: Unbound PVC
+  description: Checks if persistent volume claim is unbound
+  _type: MonitorFunction
+  script:
+    _type: ScriptFunctionBody
+    scriptBody: |-
+      // @SDKCLASS(package='com.stackstate.monitors.neuvector.mfunctions', class='PvcUnboundFunc', superClass='' )
+
+      // Contants
+      HEALTH_UNKNOWN_CONST = "UNKNOWN" //@SDK(constant=base)
+      HEALTH_CLEAR_CONST = "CLEAR" //@SDK(constant=base)
+      HEALTH_DEVIATING_CONST = "DEVIATING" //@SDK(constant=base)
+      HEALTH_CRITICAL_CONST = "CRITICAL" //@SDK(constant=base)
+
+      // Helpers
+      def newMonitorIncompleteHealthState(String id) {
+          [
+              _type : 'MonitorIncompleteHealthState',
+              id: id
+          ]
+      }
+
+      def newMonitorHealthState(String id) {
+          [
+              _type                      : 'MonitorHealthState',
+              id                         : id,
+              message                    : '',
+              state                      : HEALTH_UNKNOWN_CONST,
+              topologyIdentifier         : '',
+              displayTimeSeries          : [],
+              remediationHintTemplateData: [:]
+          ]
+      }
+
+      def newDisplayTimeSeries() {
+          [
+              _type        : 'DisplayTimeSeries',
+              name         : '',
+              timeSeriesId : null,
+              query        : null
+          ]
+      }
+
+      def newTimeSeriesId() {
+          [
+              _type        : 'TimeSeriesId',
+              groups       : [:]
+          ]
+      }
+
+      def newMetricQuery() {
+          [
+              _type       : 'PromqlMetricQuery',
+              query       : ''
+          ]
+      }
+
+      String encodeUrl(String urn) {
+          URLEncoder.encode(urn, "UTF-8")
+      }
+
+      def getPointMetric(point) {
+          point[1]
+      }
+
+      def getPointTime(point) {
+          point[0]
+      }
+
+      def valueShouldBeLowerThan(String lowerValueVariableName, Long lowerValue,
+                                String higherValueVariableName, Long higherValue,
+                                Boolean canBeEqual = false) {
+          if (canBeEqual && lowerValue != null && lowerValue >= higherValue ||
+                  !canBeEqual && lowerValue != null && (lowerValue >= higherValue || lowerValue == higherValue)) {
+              throw new Exception(
+                      "The argument '$lowerValueVariableName' should either be lower than the '$higherValueVariableName' value or entirely removed. " +
+                              "'$lowerValueVariableName' can not be the same or higher than '$higherValueVariableName'\n" +
+                              "To fix do one of the following: \n" +
+                              " - Remove the '$lowerValueVariableName' Monitor argument if it is optional\n" +
+                              " - Update it's value to be lower than '$higherValueVariableName'\n" +
+                              " - Increase the '$higherValueVariableName' value" as String)
+          }
+      }
+
+      String validateUnhealthyHealthValue(String healthValue) {
+          String upperCaseValue = healthValue.toUpperCase()
+
+          if (upperCaseValue == HEALTH_CRITICAL_CONST || upperCaseValue == HEALTH_DEVIATING_CONST) {
+              return upperCaseValue
+          } else {
+              throw new Exception("Unable to parse the unhealthy health value ${healthValue}. Should be CRITICAL or DEVIATING.")
+          }
+      }
+
+      Long determineSecondsFromTimeString(String timeString) {
+          String allowedTimeFormats =
+                  "The format for the time string needs to be as follow <TIME><TIME-TYPE>\n" +
+                          "<TIME> should be a integer value\n" +
+                          "<TIME-TYPE> should be one of the following:\n" +
+                          "- 's', 'sec', 'second' or 'seconds'\n" +
+                          "- 'm', 'min', 'minute' or 'minutes'\n" +
+                          "- 'h', 'hr', 'hour' or 'hours'\n" +
+                          "- 'd', 'day' or 'days'\n" +
+                          "- 'w', 'week' or 'weeks'"
+
+          try {
+              String lowercaseTime = timeString.toLowerCase()
+
+              String type = lowercaseTime.replaceAll("\\d+?(?:\\s+)?", "")
+              Integer value = lowercaseTime.replaceAll("(?:\\s+)?[a-zA-Z]+(?:\\s+)?", "").toInteger()
+
+              if (type == "s" || type == "sec" || type == "second" || type == "seconds") {
+                  return value
+              } else if (type == "m" || type == "min" || type == "minute" || type == "minutes") {
+                  return 60 * value
+              } else if (type == "h" || type == "hr" || type == "hour" || type == "hours") {
+                  return 60 * 60 * value
+              } else if (type == "d" || type == "day" || type == "days") {
+                  return 60 * 60 * 24 * value
+              } else if (type == "w" || type == "week" || type == "weeks") {
+                  return 60 * 60 * 24 * 7 * value
+              } else {
+                  throw new Exception("Unable to parse the time supplied '$timeString'\n$allowedTimeFormats")
+              }
+          }
+          catch (ignored) {
+              throw new Exception("Unable to parse the time supplied '$timeString'\n$allowedTimeFormats")
+          }
+      }
+
+      String convertTimeSeriesIdToIdentifier(result) {
+          result.timeSeries.id.toIdentifierString()
+      }
+
+      void verifyVariablePairRequirements(pairs) {
+          for (pair in pairs) {
+              if (pair[0][1] == null && pair[1][1] != null || pair[0][1] != null && pair[1][1] == null) {
+                  throw new Exception(
+                          "Both '${pair[0][0]}' and '${pair[1][0]}' needs to be defined.\n" +
+                                  "The one can not function without the other" as String)
+              }
+          }
+      }
+
+      def  prepareMonitorHealth( component, String failureState, List<String> storageClasses) {
+              // Retrieve the first identifier from the component, all of these components will merge anyways so taking the first
+              // one will always apply to the excepted component
+              String urn = component.identifiers.toSorted().head()
+              def monitorHealth = newMonitorHealthState(urn)
+              monitorHealth.with {
+                  state = "CLEAR"
+                  topologyIdentifier = urn
+                  message = "Unbound PVC"
+                  remediationHintTemplateData = [:]
+                  reason = "Unbound PVC"
+              }
+
+              component.synchronizationData.each{ ctype, data ->
+                  def sync = data.find {
+                      it.status != null && it.status.phase != null && it.status.phase == "Pending"
+                  }
+                  if (sync != null) {
+                          monitorHealth.state = failureState
+                          def storageClass = sync.sourceProperties.spec.storageClassName
+                          def exists = storageClasses.find {it == storageClass} != null
+                          monitorHealth.remediationHintTemplateData.put("componentUrnForUrl", URLEncoder.encode(urn, "UTF-8"))
+                          monitorHealth.remediationHintTemplateData.put("storageClass", storageClass)
+                          monitorHealth.remediationHintTemplateData.put("storageClasses", storageClasses)
+                          monitorHealth.remediationHintTemplateData.put("storageClassExists", exists)
+                          monitorHealth.remediationHintTemplateData.put("component", component)
+                  }
+              }
+              monitorHealth
+          }
+
+      // ======================== Main ========================
+
+      TopologyStream.query("type = 'storageclass'".toString()).withSynchronizationData().collectStream(1000).thenStream({data ->
+                  def storageClasses = data.collect({it.name})
+                  TopologyStream.query("label = 'stackpack:kubernetes' and type = 'persistent-volume-claim'".toString()).withSynchronizationData().then {
+                      prepareMonitorHealth(it, failureState, storageClasses)
+                  }
+              })
+  parameters:
+  - _type: Parameter
+    id: -1
+    name: failureState
+    type: FAILING_HEALTH_STATE
+    multiple: false
+    required: false
+- id: -2002
+  identifier: urn:stackpack:custom:shared:monitor:custom:unbound-pvc
+  name: Unbound PVC
+  description: Reports unbound pending persistent volume class
+  _type: Monitor
+  function: -2001
+  arguments:
+    failureState: CRITICAL
+  remediationHint: |-
+    # Unbound Persistent Volume Claim
+
+    PVC __\{{component.name\}}__ is in a `pending` state.
+
+    \{{#unless storageClassExists\}}
+    ## Verify Storage class.
+
+    Storage Class __\{{storageClass\}}__ does not exist.
+    Please fix __storageClassName__ in PVC [configuration](/#/components/\{{ componentUrnForUrl\}}#configuration).
+
+    Available storage classes are:
+    \{{#each storageClasses\}}
+    - \{{this\}}
+    \{{/each\}}
+    \{{/unless\}}
+
+
+    ## Pod Events
+    Go to the [pvc events](/#/components/\{{ componentUrnForUrl\}}/events?view=eventCategories--Alerts__eventTypes--ProvisioningFailed)
+    If there are no "Failed" events shown increase the time-range by clicking on the Zoom-out button on next to the
+    telemetry-time-interval on the bottom left of the timeline.
+
+    \{{#if storageClassExists\}}
+    ## Check Configuration
+
+    Check you PVC [configuration](/#/components/\{{ componentUrnForUrl\}}#configuration).
+    \{{/if\}}
+  intervalSeconds: 30
+  tags:
+  - storage
+  status: ENABLED
