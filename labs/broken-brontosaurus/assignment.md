@@ -11,6 +11,7 @@ task labs:brontosaurus:setup
 Broken Brontosaurus
 ====================
 
+![brontosaurus](./brokenbrontosaurus.webp)
 
 Meanwhile while you were busy setting up SUSE Observability, our Brontosaurus was re-deployed to the downstream cluster, but it seems to be broken. Can you help us fix it?
 

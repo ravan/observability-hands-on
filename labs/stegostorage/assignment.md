@@ -13,6 +13,8 @@ task labs:stegostorage:setup
 Stego Storage Hits a Snag
 =========================================================
 
+![stegostorage](./stegostorage.webp)
+
 In the prehistoric realm of Jurassic Net, data storage is managed by Stego Storage, the dinosaur known for keeping everyone’s precious files safe. Stego Storage is famous for its massive plates, perfect for holding vast amounts of data. But today, something strange has happened, and Stego Storage is at a loss.
 
 As Stego Storage prepares to save files, a peculiar message flashes on the stone tablets: “Storage Unavailable.” Stego Storage scratches his head and checks his equipment. Everything looks fine… or does it?
