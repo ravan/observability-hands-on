@@ -111,4 +111,18 @@ entries:
     urls:
     - jurassic-net-0.1.0.tgz
     version: 0.1.0
-generated: "2024-10-15T11:17:31.485675565Z"
+  stegostorage:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2024-10-16T16:21:46.800585104Z"
+    description: A Helm chart for Stegostorage Mackroservices
+    digest: 809166cb8a14fdccd37f611361cbd37470287ea74245ff619920954aebf07655
+    keywords:
+    - challenge
+    - observability
+    name: stegostorage
+    type: application
+    urls:
+    - stegostorage-0.1.0.tgz
+    version: 0.1.0
+generated: "2024-10-16T16:21:46.800609048Z"
