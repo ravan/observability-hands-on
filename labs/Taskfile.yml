@@ -12,6 +12,9 @@ includes:
   stegostorage:
     taskfile: ./stegostorage
 
+  configosaurus:
+    taskfile: ./configosaurus
+
   dino-diner:
     taskfile: ./dino-diner
 

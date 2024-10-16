@@ -1,0 +1,48 @@
+version: '3'
+
+vars:
+  CHART_CONFIGO: configosaurus
+  RELEASE_CONFIGO: "{{.CHART_CONFIGO}}"
+  NAMESPACE_CONFIGO: museum
+  
+tasks:
+
+  assignment:
+    cmds:
+      - open ./configosaurus/assignment.md
+
+  setup: 
+    cmds:
+      - task: :install-chart
+        vars:
+          RELEASE: "{{.RELEASE_CONFIGO}}"
+          CHART: "{{.CHART_CONFIGO}}" 
+          NAMESPACE: "{{.NAMESPACE_CONFIGO}}" 
+          VALUES: |
+                  msgUpdated: "no"
+
+  trigger:
+   cmds:
+      - task: :install-chart
+        vars:
+          RELEASE: "{{.RELEASE_CONFIGO}}"
+          CHART: "{{.CHART_CONFIGO}}" 
+          NAMESPACE: "{{.NAMESPACE_CONFIGO}}" 
+          VALUES: |
+                  msgUpdated: "yes"
+ 
+  resolve:
+    deps:
+      - teardown
+    cmds:
+      - task: trigger
+
+  teardown:
+    ignore_error: true
+    cmds:
+      - task: :uninstall-chart
+        vars:
+          RELEASE: "{{.RELEASE_CONFIGO}}"
+          CHART: "{{.CHART_CONFIGO}}"
+          NAMESPACE: "{{.NAMESPACE_CONFIGO}}" 
+ 

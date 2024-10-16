@@ -1,0 +1,8 @@
+questions:
+- variable: msgUpdated
+  label: "Message Updated"
+  type: string
+  default: "no"
+  description: "Has the dino council of elders realease a new message?"
+  required: true
+  group: General

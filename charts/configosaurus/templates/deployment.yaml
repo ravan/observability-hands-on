@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: configosaurus
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: configosaurus
+  template:
+    metadata:
+      labels:
+        app: configosaurus
+    spec:
+      containers:
+      - name: configosaurus
+        image: gcr.io/google_containers/busybox
+        command:
+            - /bin/sh
+            - -c
+            - |
+              while true
+              do
+                echo "$ANNOUNCEMENT"
+                sleep 10
+              done
+        env:
+          - name: ANNOUNCEMENT
+            valueFrom:
+              configMapKeyRef:
+                name: configosaurus
+                key: message

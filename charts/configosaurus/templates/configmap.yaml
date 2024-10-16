@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configosaurus
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+data:
+  {{ if eq .Values.msgUpdated "no"}}
+  message: "Attention dinos! T-Rex has declared today ‘No Running’ day. Please stroll at a leisurely pace to avoid being mistaken for lunch!"
+  {{ else }}
+  message: "Breaking news! T-Rex has now declared today ‘No Strolling’ day. Please run as fast as possible to avoid becoming a snack!"
+  {{ end }}
+  

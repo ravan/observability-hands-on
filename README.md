@@ -100,4 +100,6 @@ task labs:<name of challenge>:teardown
     - Troubleshoot slow responses and 5xx http errors without traces
 - [Stegostorage](./labs/stegostorage/assignment.md)
     - Troubleshoot pending state
+- [Configosaurus](./labs/configosaurus/assignment.md)
+    - Troubleshoot application behaviour in relation to config
     
