@@ -51,6 +51,20 @@ entries:
     urls:
     - certosaurus-0.1.0.tgz
     version: 0.1.0
+  configosaurus:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2024-10-16T20:03:43.569275345Z"
+    description: A Helm chart for Configosaurus
+    digest: 41ebd90cdf80ae106c2ebd7ab95a3d4b42338f5bb23e8dabaa651baf12613060
+    keywords:
+    - challenge
+    - observability
+    name: configosaurus
+    type: application
+    urls:
+    - configosaurus-0.1.0.tgz
+    version: 0.1.0
   dino-diner:
   - apiVersion: v2
     appVersion: 0.1.0
@@ -125,4 +139,4 @@ entries:
     urls:
     - stegostorage-0.1.0.tgz
     version: 0.1.0
-generated: "2024-10-16T16:21:46.800609048Z"
+generated: "2024-10-16T20:03:43.663942332Z"
