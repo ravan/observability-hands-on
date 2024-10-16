@@ -2,7 +2,7 @@
 
 This repository contain various kubernetes challenges that showcase's Suse Observaility and its troubleshooting capabilities.
 
-![dinochallenges](./dinochallenges.webp)
+![dinochallenges](./dinochallenges.png)
 
 ## Dino Adventures that wait
 
