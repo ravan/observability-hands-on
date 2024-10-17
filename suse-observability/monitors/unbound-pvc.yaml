@@ -200,12 +200,12 @@ nodes:
   arguments:
     failureState: CRITICAL
   remediationHint: |-
-    # Unbound Persistent Volume Claim
+    ### Unbound Persistent Volume Claim
 
     PVC __\{{component.name\}}__ is in a `pending` state.
 
     \{{#unless storageClassExists\}}
-    ## Verify Storage class.
+    ### Verify Storage class.
 
     Storage Class __\{{storageClass\}}__ does not exist.
     Please fix __storageClassName__ in PVC [configuration](/#/components/\{{ componentUrnForUrl\}}#configuration).
@@ -217,13 +217,13 @@ nodes:
     \{{/unless\}}
 
 
-    ## Pod Events
+    ### Pod Events
     Go to the [pvc events](/#/components/\{{ componentUrnForUrl\}}/events?view=eventCategories--Alerts__eventTypes--ProvisioningFailed)
     If there are no "Failed" events shown increase the time-range by clicking on the Zoom-out button on next to the
     telemetry-time-interval on the bottom left of the timeline.
 
     \{{#if storageClassExists\}}
-    ## Check Configuration
+    ### Check Configuration
 
     Check you PVC [configuration](/#/components/\{{ componentUrnForUrl\}}#configuration).
     \{{/if\}}

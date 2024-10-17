@@ -10,9 +10,14 @@ vars:
   KUBECONFIG: '--kubeconfig {{.KUBECONFIG_FILE}}'
   
 includes:
+  # Tasks for the lifecycle control for individual labs
   labs:
     taskfile: ./labs
+  # Tasks to manage a local k3s environment
   local: 
     taskfile: ./local
     dir: ./local
-  
+  # Tasks to managage tuning Suse Observability server monitors.
+  server:
+    taskfile: ./suse-observability
+    dir: ./suse-observability

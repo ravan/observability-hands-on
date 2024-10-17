@@ -17,7 +17,7 @@ nodes:
     the Kubernetes environment.
   function: {{ get "urn:stackpack:common:monitor-function:threshold"  }}
   id: -13
-  identifier: urn:custom:monitor:cpu-throttling-v2
+  identifier: urn:custom:monitor:pod-cpu-throttling-v2
   intervalSeconds: 60
   name: CPU Throttling V2
   remediationHint: |-

@@ -1,8 +1,8 @@
 nodes:
 - _type: Monitor
   arguments:
-    criticalThreshold: 3.0
-    criticalTimeWindow: 5 minutes
+    criticalThreshold: 5.0
+    criticalTimeWindow: 60 seconds
     deviatingThreshold: 3.0
     deviatingTimeWindow: 60 seconds
     loggingLevel: WARN

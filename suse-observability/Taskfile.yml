@@ -1,7 +1,5 @@
 version: '3'
 
-dotenv: ['.env']
-
 vars:
   PROFILE: instruqt
   GET_FIELD_FUNC: |
@@ -14,21 +12,24 @@ vars:
     - urn:stackpack:prime-kubernetes:shared:monitor:http-response-time
     - urn:stackpack:kubernetes-v2:shared:monitor:kubernetes-v2:pod-cpu-throttling
     - urn:stackpack:kubernetes-v2:shared:monitor:kubernetes-v2:out-of-memory-containers
+    - urn:stackpack:kubernetes-v2:shared:monitor:kubernetes-v2:pods-in-waiting-state
 
   CUSTOM_MONITORS:
-    - urn:custom:monitor:cpu-throttling-v2
+    - urn:custom:monitor:pods-in-waiting-state-v2
+    - urn:custom:monitor:pod-cpu-throttling-v2
     - urn:custom:monitor:out-of-memory-for-containers-v2
     - urn:custom:monitor:http-response-time-v2
+    - urn:stackpack:custom:shared:monitor:custom:unbound-pvc
 
 tasks:
 
   upload-custom-monitors:
     silent: true
     vars:
-      CM:
+      FILES:
         sh: find ./monitors -type f -name '*.yaml'
     cmds:
-      - for: { var: CM }
+      - for: { var: FILES }
         cmd: sts monitor apply -f {{.ITEM}} -c {{.PROFILE}}
   
   delete-custom-monitors:

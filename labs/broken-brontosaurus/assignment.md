@@ -7,6 +7,8 @@ Install the challenge,
 task labs:brontosaurus:setup
 ```
 
+> [!IMPORTANT]
+>  Takes about 80 seconds from deployment to healthy state and monitor triggered.
 
 Broken Brontosaurus
 ====================
