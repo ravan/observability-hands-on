@@ -27,8 +27,12 @@ data:
 
      [[endpoints.routes]]
      uri = "triceratops-transport/route"
+     {{ if eq .Values.napping "yes" }}
+     delay = "1s"
+     {{ else }}
      delay = "{{.Values.defaultLatency}}"  # Herbivore Hideout also depends on Triceratops to transport herbivores
-
+     {{ end }}
+     
      [otel.trace]
      enabled = {{.Values.traceEnabled}}
      tracer-name = "pteropost"

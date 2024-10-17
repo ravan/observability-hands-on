@@ -2,7 +2,7 @@ nodes:
 - _type: Monitor
   arguments:
     criticalThreshold: 5.0
-    criticalTimeWindow: 60 seconds
+    criticalTimeWindow: 120 seconds
     deviatingThreshold: 3.0
     deviatingTimeWindow: 60 seconds
     loggingLevel: WARN
@@ -10,13 +10,13 @@ nodes:
     quantile: 0.95
   description: |-
     It is important to keep an eye on the HTTP response times for a Kubernetes service. SUSE Observability monitors the 95th percentile response time, or Q95, which is a statistical measure indicating that 95% of the responses are faster than this time.
-    This is a useful measure for identifying outliers and slow requests that may negatively impact the user experience. If the Q95 response time is above 3 seconds during a specified time window, the monitor will produce a notification indicating a deviating state.
+    This is a useful measure for identifying outliers and slow requests that may negatively impact the user experience. If the Q95 response time is above threshold seconds during a specified time window, the monitor will produce a notification indicating a deviating state.
     To understand the full monitor definition check the details.
   function: {{ get "urn:stackpack:prime-kubernetes:shared:monitor-function:http-response-time"  }}
   id: -16
   identifier: urn:custom:monitor:http-response-time-v2
   intervalSeconds: 30
-  name: HTTP - response time - is above 3 seconds
+  name: HTTP - response time - is above threshold seconds
   remediationHint: |-
     We have detected that this service has a \{{ quantile \}}th percentile response time above \{{ threshold \}}.
     This signals that a significant number of users are experiencing a slow service.

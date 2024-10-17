@@ -31,7 +31,7 @@ nodes:
     3. Incorrectly configured memory limits.
 
     ## 1. New deployments that introduce a memory leak
-    A memory leak can be recognized by looking at the "Memory Usage" metric shown above. If the metric resembles a saw-tooth pattern that is a clear indication of a memory leak being present in your application. The memory usage increases over time, but the memory is not released until the container is restarted. You will notice that the container continually restarts. If this behaviour is new, it is likely that a new deployment introduced a memory leak.
+    A memory leak can be recognized by looking at the "Memory Usage" metric on the [pod metrics page](/#/components/\{{ componentUrnForUrl \}}/metrics). If the metric resembles a saw-tooth pattern that is a clear indication of a memory leak being present in your application. The memory usage increases over time, but the memory is not released until the container is restarted. You will notice that the container continually restarts. If this behaviour is new, it is likely that a new deployment introduced a memory leak.
 
     This can be checked by looking at the Events shown on the [pod highlights page](/#/components/\{{ componentUrnForUrl \}}/highlights) and checking whether a `Deployment` event happened recently after which the memory usage behaviour changed.
 

@@ -8,7 +8,8 @@ task labs:dino-diner:setup
 ```
 
 > [!IMPORTANT]
->  Takes about 70 seconds from deployment to healthy state.
+>  Takes about 80 seconds from deployment to healthy state.
+>  Takes another 40 seconds for ebpf connections to be made for services
 
 Welcome to Dinosaur Diner: The World's Oldest Restaurant!
 =========================================================
@@ -66,7 +67,7 @@ task labs:dino-diner:trigger
 ```
 
 > [!IMPORTANT]
->  Takes about 3 minutes from deployment to unhealthy state.
+>  Takes about 3 minutes from deployment to unhealthy state with span, http 5xxx and http response time monitors firing.
 
 > [!NOTE]
 > Learning platform instructions,

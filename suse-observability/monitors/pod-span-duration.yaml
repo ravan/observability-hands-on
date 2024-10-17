@@ -1,0 +1,95 @@
+nodes:
+- _type: Monitor
+  arguments:
+    comparator: GT
+    failureState: DEVIATING
+    metric:
+      aliasTemplate: Span duration 95th percentile
+      query: histogram_quantile(0.95, sum (rate(otel_span_duration_milliseconds_bucket{span_kind=~"SPAN_KIND_SERVER|SPAN_KIND_CONSUMER"}[5m]))
+        by (k8s_cluster_name, k8s_namespace_name, k8s_pod_name, span_name, le))
+      unit: ms
+    threshold: 2000.0
+    titleTemplate: "'${span_name}' Span duration"
+    urnTemplate: urn:kubernetes:/${k8s_cluster_name}:${k8s_namespace_name}:pod/${k8s_pod_name}
+  description: |
+    Monitors the duration of the server and consumer spans. When the 95th percentile of the duration is greater than the threshold (default 5000ms) the monitor has a Deviating state.
+  function: {{ get "urn:stackpack:common:monitor-function:threshold"  }}
+  id: -15
+  identifier: urn:custom:monitor:pod-span-duration-v2
+  intervalSeconds: 60
+  name: Span duration for pods V2
+  remediationHint: |-
+    We have detected that this pod has a 95th percentile span duration above \{{ threshold \}}ms for spans.
+    This signals that a significant number of users are experiencing a slow service.
+
+    Take the following steps to diagnose the problem:
+
+    ## Possible causes
+
+    - Slow dependency or dependency serving errors
+    - Recent update of the application
+    - Load on the application has increased
+    - Code has memory leaks
+    - Environment issues (e.g. certain nodes, database or services that the service depends on)
+
+    ### Slow dependency or dependency serving errors
+
+    When troubleshooting slow dependencies or dependencies that are serving errors, their are two ways to find the root
+    cause:
+
+    1. Analyze traces: begin by examining the traces with an error status in the [traces perspective](/#/components/\{{
+    componentUrnForUrl\}}/traces?filterBy=duration--\{{multiply threshold 1000000\}}__parentType--External%2CRoot). Expanding a
+    span will show
+    the full trace for that span. Spans with an error status are marked and slow services will be displayed as long spans in
+    the trace. If you find an erroneous or slow span you can follow the link to the component to continue the investigation.
+
+    2. Review Related Health Violations: Check, in the related health violations of this monitor if there are any health
+    violations on one of the services or pods that this pod depends on (focus on the lowest dependency). If you find a
+    violation, click on the component to see the related health violations. You can than continue your troubleshooting by
+    following those health violations. The related health violations can be found in the expanded version if you read this
+    in the pinned minimised version.
+
+    ### Recent update of the application
+
+    Check if the pod was recently created or updated:
+
+    - See the Age in the "About" section to identify on the [pod highlight page](/#/components/\{{ componentUrnForUrl \}})
+    is this is recently deployed
+    - If application has just started, it might be that the application has not warmed up yet. Compare the response time
+    metrics
+    for the current deployment with the previous deployment by checking the span duration metric chart with a time interval
+    including both.
+    - Check if the application is using more resources than before, consider scaling it up or giving it more resources.
+    - If increased latency is crucial, consider rolling back the application to the previous version:
+    - if that helps, then the issue is likely with new deployment
+    - if that does not help, then the issue may be in the environment (e.g. network issues or issues with the underlying
+    infrastructure, e. g. database)
+
+    ### Load on the pod has increased
+
+    - Check if the load of the pod has increased by looking at the cpu and memory usage charts. You can cross-check if that
+    matches an increase in the amount of operations for the pod via the "Throughput (spans)" chart on the [metrics
+    page](/#/components/\{{ componentUrnForUrl \}}/metrics).
+
+    If so, consider adding more replicas of the pod or giving it more resources.
+
+    ### Code has memory leaks
+
+    - Check if memory or CPU usage have been increasing over time up to the requested or limited amount, using the "Resource
+    usage" section on the [pod highlight
+    page](/#/components/\{{ componentUrnForUrl \}}). If so, there might be a memory leak.
+    - Restart the pod(s) of this service that is having the issue or add more memory/cpu
+
+    ### Environment issues
+
+    - Check duration of spans for other pods of the same workload, find them via the related pods on the [pod highlight
+    page](/#/components/\{{ componentUrnForUrl \}}). If only certain pods are having issues, it might be an issue with the
+    node the pod is running on:
+    - Try to move the pod to another node
+    - Check if other pods of other applications are also having increased span durations on that node. Drain and replace the
+    node if that is the
+    case.
+  status: ENABLED
+  tags:
+  - pod
+  - traces
