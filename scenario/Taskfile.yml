@@ -1,0 +1,102 @@
+version: '3'
+
+
+######################################################################################
+#
+#  Setup the scenarios in a Suse Observability instance where a workshop will be done
+#  for a group of people using a single login and time travel to troubleshoot challenges.
+#
+#  Individual participant setup is not handled here. That would be handled in the learning
+#  platform that reuses the labs.
+#
+######################################################################################
+
+vars:
+  CLUSTER_STQL: "label = 'cluster-name:{{.CLUSTER_NAME}}'"
+  MUSEUM_NS_STQL: "{{.CLUSTER_STQL}} AND label = 'namespace:museum'"
+  MUSEUM_DINO_DINER_NS_STQL: "{{.CLUSTER_STQL}} AND label = 'namespace:museum-dino-diner'"
+  BRONTOSAURUS_STQL: "label = 'app.kubernetes.io/name:broken-brontosaurus' AND type = 'pod' AND {{.MUSEUM_NS_STQL}}"
+  BRONTO_BURGER_POD_STQL: "label = 'service:bronto-burger' AND type = 'pod' AND {{.MUSEUM_DINO_DINER_NS_STQL}}"
+  TRICERATOPS_SERVICE_STQL: "label = 'service:triceratops-transport' AND type = 'service' AND {{.MUSEUM_DINO_DINER_NS_STQL}}"
+
+tasks:
+  clean:
+    ignore_error: true
+    cmds:
+      - kubectl delete namespace museum {{.KUBECONFIG}}
+      - kubectl delete namespace museum-dino-diner {{.KUBECONFIG}}
+      - kubectl delete namespace museum-jurassic-net {{.KUBECONFIG}}
+
+  teardown-brontosaurus:
+    silent: true
+    cmds:
+     - echo -e "${Green} Tearing down ${NC}"
+     - task: :labs:brontosaurus:teardown   
+     - echo -e "${Green} Done ${NC}"
+
+  setup-brontosaurus:
+    silent: true
+    cmds:
+     - echo -e "${Green} Deploying stable version ${NC}"
+     - task: :labs:brontosaurus:resolve   # deploy good version 
+     - echo -e "${Green} Wait for 'CLEAR' state ${NC}"
+     - task: :lib:waitForHealthState
+       vars:
+          STATE: "CLEAR"
+          STQL: "{{.BRONTOSAURUS_STQL}}"
+     - echo -e "${Green} Wait for a stable period ${NC}"
+     - task: :lib:countdown
+       vars:
+          TIME: "00:00:30"
+     - echo -e "${Green} Deploying unstable version ${NC}"
+     - task: :labs:brontosaurus:teardown # remove old
+     - task: :labs:brontosaurus:setup   # deploy bad version 
+     - echo -e "${Green} Waiting for 'CRITICAL' state ${NC}"
+     - task: :lib:waitForHealthState
+       vars:
+          STATE: "CRITICAL"
+          STQL: "{{.BRONTOSAURUS_STQL}}"
+     - echo -e "${Green} Done ${NC}"
+
+  teardown-dino-diner:
+    silent: true
+    cmds:
+     - echo -e "${Green} Tearing down ${NC}"
+     - task: :labs:dino-diner:teardown  
+     - echo -e "${Green} Waiting for 'null' state ${NC}"
+     - task: :lib:waitForHealthState
+       vars:
+          STATE: "null"
+          STQL: "{{.TRICERATOPS_SERVICE_STQL}}"
+     - echo -e "${Green} Done ${NC}"
+
+
+  setup-dino-diner:
+    silent: true
+    cmds:
+     - echo -e "${Green} Deploying stable version ${NC}"
+     - task: :labs:dino-diner:setup  # deploy good version 
+     - echo -e "${Green} Wait for 'CLEAR' state ${NC}"
+     - task: :lib:waitForHealthState
+       vars:
+          STATE: "CLEAR"
+          STQL: "{{.BRONTO_BURGER_POD_STQL}}"
+     - echo -e "${Green} Wait for ebpf connections to be established ${NC}"
+     - task: :lib:countdown
+       vars:
+          TIME: "00:01:30"
+     - echo -e "${Green} Deploying unstable version ${NC}"
+     - task: :labs:dino-diner:trigger   # deploy bad version 
+     - echo -e "${Green} Waiting for 'DEVIATING' state ${NC}"
+     - task: :lib:waitForHealthState
+       vars:
+          STATE: "DEVIATING"
+          STQL: "{{.TRICERATOPS_SERVICE_STQL}}"
+     - echo -e "${Green} Wait for ebpf connections to be re-established ${NC}"
+     - task: :lib:countdown
+       vars:
+          TIME: "00:03:00"
+
+     - echo -e "${Green} Done ${NC}"
+
+ 

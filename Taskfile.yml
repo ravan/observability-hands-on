@@ -1,6 +1,6 @@
 version: '3'
 
-dotenv: ['.env']
+dotenv: ['.env', '.env_color']
 
 vars:
   CLUSTER_NAME: lab-rav
@@ -13,6 +13,12 @@ includes:
   # Tasks for the lifecycle control for individual labs
   labs:
     taskfile: ./labs
+  # Tasks to setup labs to be used with time travel for group workshop
+  scenario:
+    taskfile: ./scenario
+  # Tasks containing resusable tasks
+  lib:
+    taskfile: ./lib
   # Tasks to manage a local k3s environment
   local: 
     taskfile: ./local
@@ -21,3 +27,6 @@ includes:
   server:
     taskfile: ./suse-observability
     dir: ./suse-observability
+
+
+

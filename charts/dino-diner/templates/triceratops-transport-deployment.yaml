@@ -5,6 +5,9 @@ metadata:
   labels:
     service: triceratops-transport
     {{- include "common.labels" . | nindent 4 }}
+    {{ if eq .Values.napping "yes"}}
+    app.kubernetes.io/version: "0.1.1"
+    {{ end }}
 spec:
   replicas: 1
   selector:
@@ -14,8 +17,11 @@ spec:
   template:
     metadata:
       labels:
-		{{- include "common.labels" . | nindent 8 }}
-        service: triceratops-transport 
+		    {{- include "common.labels" . | nindent 8 }}
+        service: triceratops-transport
+        {{ if eq .Values.napping "yes"}}
+        app.kubernetes.io/version: "0.1.1"
+        {{ end }} 
       annotations:
         checksum/config: '{{ include (print $.Template.BasePath "/triceratops-transport-cm.yaml") . | sha256sum}}'
     spec:

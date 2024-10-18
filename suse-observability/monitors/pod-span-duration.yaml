@@ -9,7 +9,7 @@ nodes:
         by (k8s_cluster_name, k8s_namespace_name, k8s_pod_name, span_name, le))
       unit: ms
     threshold: 2000.0
-    titleTemplate: "'${span_name}' Span duration"
+    titleTemplate: "Span duration for '${span_name}'"
     urnTemplate: urn:kubernetes:/${k8s_cluster_name}:${k8s_namespace_name}:pod/${k8s_pod_name}
   description: |
     Monitors the duration of the server and consumer spans. When the 95th percentile of the duration is greater than the threshold (default 5000ms) the monitor has a Deviating state.

@@ -25,7 +25,11 @@ nodes:
   name: CPU Throttling V2
   remediationHint: |-
 
-    ### Understanding CPU Usage and CPU Throttling Charts
+    ### Application behaviour
+
+    Check the container [Logs](/#/components/\{{ componentUrnForUrl \}}#logs) for any hints on how the application is behaving under CPU Throttling
+
+    ### Understanding CPU Usage and CPU Throttling 
 
     On the [pod metrics page](/#/components/\{{ componentUrnForUrl \}}/metrics) you will find the CPU Usage and CPU Throttling charts. 
      

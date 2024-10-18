@@ -1,3 +1,8 @@
+resources:
+  limits:
+    cpu: 250m
+    memory: 512Mi
+
 image:
   repository: "otel/opentelemetry-collector-k8s"
 extraEnvsFrom:
@@ -21,6 +26,10 @@ config:
       auth:
         authenticator: bearertokenauth
       endpoint: "${env:OTEL_ENDPOINT}"
+    # otlp/jaeger:
+    #   endpoint: "jaeger-collector:4317"
+    #   tls:
+    #     insecure: true
   processors:
     tail_sampling:
       decision_wait: 10s
@@ -55,6 +64,9 @@ config:
         value: "${env:CLUSTER_NAME}" 
       - key: service.instance.id
         from_attribute: k8s.pod.uid
+        action: insert
+      - key: service.namespace
+        from_attribute: k8s.namespace.name
         action: insert
     filter/dropMissingK8sAttributes:
       error_mode: ignore

@@ -102,6 +102,26 @@ task labs:<name of challenge>:teardown
 
 ```
 
+## Pre-staging Scenarios
+
+When doing an interactive workshop with a large group in a short amount of time, it may not be practical to do the challenges
+in an online learning platform where each individual has their own environment.
+
+Instead, we could create a single login account in Suse Observability for all participants and use time travel for candidates 
+to explore error and healthy states of the challenges.
+
+The challenges can be pre-staged with healthy and error states with predictable timings.
+
+```bash
+# Will delete all namespaces that were used by previous labs
+scenario:clean
+
+scenario:setup-brontosaurus
+
+
+```
+
+
 > [!WARNING]
 > Some assignments are written to primarily use Rancher Manager and Suse Observability from a learning platform. For testing however, we can
 > use the Helm Charts directly instead of doing it through Rancher. 

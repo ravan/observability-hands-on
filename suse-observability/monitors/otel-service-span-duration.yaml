@@ -8,7 +8,7 @@ nodes:
       query: histogram_quantile(0.95, sum by(service_namespace, service_name, span_name, le)(rate(otel_span_duration_milliseconds_bucket{span_kind=~"SPAN_KIND_SERVER|SPAN_KIND_CONSUMER"}[5m])))
       unit: ms
     threshold: 2000.0
-    titleTemplate: "'${span_name}' span duration"
+    titleTemplate: "Span duration for '${span_name}'"
     urnTemplate: urn:opentelemetry:namespace/${service_namespace}:service/${service_name}
   description: |
     Monitors the duration of the server and consumer spans. When the 95th percentile of the duration is greater than the threshold (default 5000ms) the monitor has a Deviating state.
