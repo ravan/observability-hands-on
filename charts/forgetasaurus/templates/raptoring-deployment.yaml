@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: raptoring-service
+  name: raptoring
   labels:
     app: raptoring
     {{- include "common.labels" . | nindent 4 }}
@@ -23,7 +23,7 @@ spec:
         checksum/config: '{{ include (print $.Template.BasePath "/raptoring-cm.yaml") . | sha256sum}}'
     spec:
       containers:
-      - name: raptoring-service
+      - name: raptoring
         image: {{.Values.image}}
         env:
         - name: CONFIG_FILE

@@ -2,9 +2,9 @@
 
 This repository contain various kubernetes challenges that showcase's Suse Observaility and its troubleshooting capabilities.
 
-![dinochallenges](./dinochallenges.png)
+![dinochallenges](./assets/dinochallenges.png)
 
-## Dino Adventures that wait
+## Dino Adventures that await
 
 - [Broken Brontosaurus](./labs/broken-brontosaurus/assignment.md)
     - Troubleshoot crashback loop
@@ -57,12 +57,6 @@ Use the predefined tasks to manage the vm
 # create the vm
 task local:create-vm
 
-# Install Suse Observability Agent
-task local:deploy-observability-agent
-
-# Install Open Telemetry Agent
-task local:deploy-otel-agent
-
 # stop the vm
 task local:stop-vm
 
@@ -76,6 +70,47 @@ kubectl get nodes
 # destroy the vm
 task local:destroy-vm
 
+```
+
+### Remote Cluster
+
+If you have a remote kubernetes cluster, you need to setup a download the kubeconfig.  Then setup your `.env` similar to,
+
+```bash
+LOCAL_CLUSTER=false
+CLUSTER_NAME=lab-test
+# When LOCAL_CLUSTER is false, specify the kubeconfig to use:
+KUBECONFIG_FILE_PATH=~/sts/repos/github/ravan/observability-hands-on
+KUBECONFIG_FILE_NAME=kubeconfig
+```
+
+
+## Deploy Suse Observability Agents
+
+Before deploying the agents, make sure you have setup stackpack instances on the Suse Observability server for kubernetes and the custom sync.
+
+### Stackpack Instances
+
+#### Kubernetes
+
+![kubernetes](./assets/k8s-stackpack.png)
+
+#### Kubernetes Extension
+
+![kubernetes-ext](./assets/k8s-ext-stackpack.png)
+
+### Deploy Agents
+
+```bash
+
+# Install Suse Observability Agent
+task local:deploy-observability-agent
+
+# Install Open Telemetry Agent
+task local:deploy-otel-agent
+
+# Install the Suse Observability Agent extensions 
+task local:deploy-observability-agent-extensions
 ```
 
 ## Running a challenge
@@ -128,6 +163,7 @@ scenario:teardown-<lab>
 
 ```bash
 scenario:setup-brontosaurus
+scenario:trigger-brontosaurus
 scenario:teardown-brontosaurus
 ```
 
@@ -139,8 +175,35 @@ scenario:resolve-dino-diner
 scenario:teardown-dino-diner
 ```
 
+### Forgetasaurus  Lab Scenario
 
+```bash
+scenario:setup-forgetasaurus
+scenario:resolve-forgetasaurus
+scenario:teardown-forgetasaurus
+```
+### Stegosaurus Lab Scenario
 
+```bash
+scenario:setup-stegosaurus
+scenario:resolve-stegosaurus
+scenario:teardown-stegosaurus
+```
+### Jurassic Net Lab Scenario
+
+```bash
+scenario:setup-jurassic-net
+scenario:resolve-jurassic-net
+scenario:teardown-jurassic-net
+```
+
+### Configosaurus  Lab Scenario
+
+```bash
+scenario:setup-configosaurus
+scenario:resolve-configosaurus
+scenario:teardown-configosaurus
+```
 
 > [!WARNING]
 > Some assignments are written to primarily use Rancher Manager and Suse Observability from a learning platform. For testing however, we can
