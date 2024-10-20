@@ -28,6 +28,14 @@ tasks:
       - limactl delete {{.CLUSTER_NAME}} --force --tty=false
       - limactl list
 
+  trigger-k8s-ext-agent-job:
+    cmds:
+      - kubectl create job {{.KUBECONFIG}} --from=cronjob/suse-stackstate-k8s-ext "sync-$(date +%s)" -n suse-observability-extensions
+      
+  deploy-local-storage:
+    cmds:
+      - kubectl apply {{.KUBECONFIG}} -f https://raw.githubusercontent.com/rancher/local-path-provisioner/v0.0.30/deploy/local-path-storage.yaml
+
   deploy-observability-agent:
     cmds:
       - echo "Agent will sent data to '{{.CLUSTER_NAME}}' pipeline on server '{{.STS_URL}}'"

@@ -14,10 +14,14 @@ version: '3'
 vars:
   CLUSTER_STQL: "label = 'cluster-name:{{.CLUSTER_NAME}}'"
   MUSEUM_NS_STQL: "{{.CLUSTER_STQL}} AND label = 'namespace:museum'"
+  MUSEUM_JURASSIC_NS_STQL: "{{.CLUSTER_STQL}} AND label = 'namespace:museum-jurassic-net'"
   MUSEUM_DINO_DINER_NS_STQL: "{{.CLUSTER_STQL}} AND label = 'namespace:museum-dino-diner'"
-  BRONTOSAURUS_STQL: "label = 'app.kubernetes.io/name:broken-brontosaurus' AND type = 'pod' AND {{.MUSEUM_NS_STQL}}"
+  BRONTOSAURUS_POD_STQL: "label = 'app.kubernetes.io/name:broken-brontosaurus' AND type = 'pod' AND {{.MUSEUM_NS_STQL}}"
+  BRONTO_BURGER_STQL: "label = 'service:bronto-burger' AND type = 'service' AND {{.MUSEUM_DINO_DINER_NS_STQL}}"
   BRONTO_BURGER_POD_STQL: "label = 'service:bronto-burger' AND type = 'pod' AND {{.MUSEUM_DINO_DINER_NS_STQL}}"
-  TRICERATOPS_SERVICE_STQL: "label = 'service:triceratops-transport' AND type = 'service' AND {{.MUSEUM_DINO_DINER_NS_STQL}}"
+  PTEROPOST_STQL: "label = 'service:pteropost' AND type = 'service' AND {{.MUSEUM_DINO_DINER_NS_STQL}}"
+  FORGETASAURUS_POD_STQL: "label = 'service:forgetasaurus' AND type = 'pod' AND {{.MUSEUM_JURASSIC_NS_STQL}}"
+  TRICERATOPS_STQL: "label = 'service:triceratops-transport' AND type = 'service' AND {{.MUSEUM_DINO_DINER_NS_STQL}}"
 
 tasks:
   clean:
@@ -37,17 +41,21 @@ tasks:
   setup-brontosaurus:
     silent: true
     cmds:
+     - echo -e "${Yellow} Started at $(date '+%T')  ${NC}" 
+     - echo -e "${Blue} Started phase 1 at $(date '+%T')  ${NC}" 
      - echo -e "${Green} Deploying stable version ${NC}"
      - task: :labs:brontosaurus:resolve   # deploy good version 
      - echo -e "${Green} Wait for 'CLEAR' state ${NC}"
      - task: :lib:waitForHealthState
        vars:
           STATE: "CLEAR"
-          STQL: "{{.BRONTOSAURUS_STQL}}"
+          STQL: "{{.BRONTOSAURUS_POD_STQL}}"
      - echo -e "${Green} Wait for a stable period ${NC}"
      - task: :lib:countdown
        vars:
           TIME: "00:00:30"
+     - echo -e "${Blue} Finished phase 1 at $(date '+%T')  ${NC}" 
+     - echo -e "${Blue} Started phase 2 at $(date '+%T')  ${NC}" 
      - echo -e "${Green} Deploying unstable version ${NC}"
      - task: :labs:brontosaurus:teardown # remove old
      - task: :labs:brontosaurus:setup   # deploy bad version 
@@ -55,48 +63,91 @@ tasks:
      - task: :lib:waitForHealthState
        vars:
           STATE: "CRITICAL"
-          STQL: "{{.BRONTOSAURUS_STQL}}"
+          STQL: "{{.BRONTOSAURUS_POD_STQL}}"
+     - echo -e "${Blue} Finished phase 2 at $(date '+%T')  ${NC}" 
+     - echo -e "${Yellow} Finished at $(date '+%T')  ${NC}" 
      - echo -e "${Green} Done ${NC}"
 
   teardown-dino-diner:
     silent: true
     cmds:
+     - echo -e "${Yellow} Started at $(date '+%T')  ${NC}" 
      - echo -e "${Green} Tearing down ${NC}"
      - task: :labs:dino-diner:teardown  
-     - echo -e "${Green} Waiting for 'null' state ${NC}"
+     - echo -e "${Green} Waiting for triceratops service to be 'null' state ${NC}"
      - task: :lib:waitForHealthState
        vars:
           STATE: "null"
-          STQL: "{{.TRICERATOPS_SERVICE_STQL}}"
+          STQL: "{{.TRICERATOPS_STQL}}"
+     - echo -e "${Green} Waiting for bronto-burger pod to be 'null' state ${NC}"
+     - task: :lib:waitForHealthState
+       vars:
+          STATE: "null"
+          STQL: "{{.BRONTO_BURGER_POD_STQL}}"
+     - echo -e "${Yellow} Finished at $(date '+%T')  ${NC}" 
      - echo -e "${Green} Done ${NC}"
-
 
   setup-dino-diner:
     silent: true
     cmds:
+     - echo -e "${Yellow} Started at $(date '+%T')  ${NC}" 
+     - echo -e "${Blue} Started phase 1 at $(date '+%T')  ${NC}" 
      - echo -e "${Green} Deploying stable version ${NC}"
      - task: :labs:dino-diner:setup  # deploy good version 
-     - echo -e "${Green} Wait for 'CLEAR' state ${NC}"
+     - echo -e "${Green} Wait for bronto-burger pod to have 'CLEAR' state ${NC}"
      - task: :lib:waitForHealthState
        vars:
           STATE: "CLEAR"
           STQL: "{{.BRONTO_BURGER_POD_STQL}}"
-     - echo -e "${Green} Wait for ebpf connections to be established ${NC}"
+     - echo -e "${Green} Wait for bronto-burger to pteropost service ebpf connections to be established ${NC}"
+     - task: :lib:waitForEbpfConnection
+       vars:
+          COMPONENT: "pteropost"
+          STQL: "{{.BRONTO_BURGER_STQL}}"
+     - echo -e "${Green} Allow for 1 agent cylce (45 second) stable period ${NC}"
      - task: :lib:countdown
        vars:
-          TIME: "00:01:30"
+          TIME: "00:00:50"
+     - echo -e "${Blue} Finished phase 1 at $(date '+%T') ${NC}" 
+     - echo -e "${Blue} Started phase 2 at $(date '+%T') ${NC}" 
      - echo -e "${Green} Deploying unstable version ${NC}"
-     - task: :labs:dino-diner:trigger   # deploy bad version 
-     - echo -e "${Green} Waiting for 'DEVIATING' state ${NC}"
+     - task: :labs:dino-diner:trigger  # deploy bad version 
+     - echo -e "${Green} Waiting for triceratops service to have 'DEVIATING' state ${NC}"
      - task: :lib:waitForHealthState
        vars:
           STATE: "DEVIATING"
-          STQL: "{{.TRICERATOPS_SERVICE_STQL}}"
-     - echo -e "${Green} Wait for ebpf connections to be re-established ${NC}"
-     - task: :lib:countdown
+          STQL: "{{.TRICERATOPS_STQL}}"
+     - echo -e "${Green} Wait for pteropost to triceratops ebpf connections to be re-established ${NC}"
+     - task: :lib:waitForEbpfConnection
        vars:
-          TIME: "00:03:00"
-
+          COMPONENT: "triceratops-transport"
+          STQL: "{{.PTEROPOST_STQL}}"
+     - echo -e "${Blue} Finished phase 2 at $(date '+%T')  ${NC}" 
+     - echo -e "${Yellow} Finished at $(date '+%T')  ${NC}" 
      - echo -e "${Green} Done ${NC}"
 
- 
+  resolve-dino-diner:
+    silent: true
+    cmds:
+     - echo -e "${Yellow} Started at $(date '+%T')  ${NC}" 
+     - echo -e "${Green} Deploying stable version ${NC}"
+     - task: :labs:dino-diner:resolve  # deploy good version 
+     - echo -e "${Green} Wait for bronto-burger pod to have 'CLEAR' state ${NC}"
+     - task: :lib:waitForHealthState
+       vars:
+          STATE: "CLEAR"
+          STQL: "{{.BRONTO_BURGER_POD_STQL}}"
+     - echo -e "${Green} Waiting for triceratops service to have 'CLEAR' state ${NC}"
+     - task: :lib:waitForHealthState
+       vars:
+          STATE: "CLEAR"
+          STQL: "{{.TRICERATOPS_STQL}}"
+     - echo -e "${Green} Wait for pteropost to triceratops ebpf connections to be re-established ${NC}"
+     - task: :lib:waitForEbpfConnection
+       vars:
+          COMPONENT: "triceratops-transport"
+          STQL: "{{.PTEROPOST_STQL}}"
+     - echo -e "${Yellow} Finished at $(date '+%T')  ${NC}" 
+     - echo -e "${Green} Done ${NC}"
+
+  

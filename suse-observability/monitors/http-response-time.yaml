@@ -1,9 +1,9 @@
 nodes:
 - _type: Monitor
   arguments:
-    criticalThreshold: 5.0
-    criticalTimeWindow: 120 seconds
-    deviatingThreshold: 3.0
+    criticalThreshold: 7.0
+    criticalTimeWindow: 5 minutes
+    deviatingThreshold: 5.0
     deviatingTimeWindow: 60 seconds
     loggingLevel: WARN
     nameTemplate: HTTP - response time - is above \{{threshold\}}

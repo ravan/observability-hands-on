@@ -5,7 +5,7 @@ nodes:
     failureState: DEVIATING
     metric:
       aliasTemplate: Span duration 95th percentile
-      query: histogram_quantile(0.95, sum by(service_namespace, service_name, span_name, le)(rate(otel_span_duration_milliseconds_bucket{span_kind=~"SPAN_KIND_SERVER|SPAN_KIND_CONSUMER"}[5m])))
+      query: histogram_quantile(0.95, sum by(service_namespace, service_name, span_name, le)(rate(otel_span_duration_milliseconds_bucket{span_kind=~"SPAN_KIND_SERVER|SPAN_KIND_CONSUMER"}[1m])))
       unit: ms
     threshold: 2000.0
     titleTemplate: "Span duration for '${span_name}'"

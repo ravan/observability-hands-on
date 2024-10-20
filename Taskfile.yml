@@ -3,8 +3,6 @@ version: '3'
 dotenv: ['.env', '.env_color']
 
 vars:
-  CLUSTER_NAME: lab-rav
-  LOCAL_CLUSTER: "true"
   LOCAL_INSTANCE: '{{.CLUSTER_NAME}}'
   KUBECONFIG_FILE: '{{ if eq .LOCAL_CLUSTER "true" }}$HOME/.lima/{{.LOCAL_INSTANCE}}/copied-from-guest/kubeconfig.yaml{{else}}{{.KUBECONFIG_FILE_PATH}}/{{.KUBECONFIG_FILE_NAME}}{{end}}'
   KUBECONFIG: '--kubeconfig {{.KUBECONFIG_FILE}}'

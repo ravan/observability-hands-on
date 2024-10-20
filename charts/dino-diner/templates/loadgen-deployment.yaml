@@ -17,6 +17,7 @@ spec:
         app: hungry-dinos
       annotations:
         checksum/config: '{{ include (print $.Template.BasePath "/loadgen-cm.yaml") . | sha256sum}}'
+        checksum/transportconfig: '{{ include (print $.Template.BasePath "/triceratops-transport-cm.yaml") . | sha256sum}}'
     spec:
       containers:
       - name: hungry-dinos

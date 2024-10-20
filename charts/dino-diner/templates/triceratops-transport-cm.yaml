@@ -31,7 +31,7 @@ data:
      [[endpoints]]
      uri = "/route"
      {{ if eq .Values.napping "yes" }}
-     delay = "1s" # Simulate variable delay before processing
+     delay = "<1s>" # Simulate variable delay before processing
      errorOnCall = 10 
      {{ else }}
      delay = "100ms"

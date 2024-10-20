@@ -116,10 +116,30 @@ The challenges can be pre-staged with healthy and error states with predictable 
 # Will delete all namespaces that were used by previous labs
 scenario:clean
 
-scenario:setup-brontosaurus
+# Typical flow
+scenario:setup-<lab>
+scenario:resolve-<lab> .   #optional
+scenario:teardown-<lab>
 
 
 ```
+
+### Brotosaurus Lab Scenario
+
+```bash
+scenario:setup-brontosaurus
+scenario:teardown-brontosaurus
+```
+
+### Dino Diner Lab Scenario
+
+```bash
+scenario:setup-dino-diner
+scenario:resolve-dino-diner
+scenario:teardown-dino-diner
+```
+
+
 
 
 > [!WARNING]

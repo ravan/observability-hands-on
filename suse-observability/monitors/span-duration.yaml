@@ -7,7 +7,7 @@ nodes:
       aliasTemplate: Span duration 95th percentile
       promqlQuery: histogram_quantile(0.95, sum(rate(otel_span_duration_milliseconds_bucket{span_kind=~"SPAN_KIND_SERVER|SPAN_KIND_CONSUMER",
         k8s_cluster_name="${tags.cluster-name}", k8s_namespace_name="${tags.namespace}",
-        __multi__="${properties.local_pod_metric_selector__local_pod_label_+}"}[2m]))
+        __multi__="${properties.local_pod_metric_selector__local_pod_label_+}"}[1m]))
         by (span_name, le))
       topologyQuery: (label = "stackpack:kubernetes" and type = "service")
       unit: ms

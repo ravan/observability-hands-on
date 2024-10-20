@@ -12,7 +12,8 @@ data:
     scenarios: {
         constant_request_rate: {
             executor: 'constant-arrival-rate',
-            rate: 3,
+            startTime: '30s',
+            rate: 1,
             timeUnit: '1s', // 1 iterations per second, i.e. 1 RPS
             duration: '48h',
             preAllocatedVUs: 5, // how large the initial pool of VUs would be
