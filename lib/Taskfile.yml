@@ -94,8 +94,12 @@ vars:
         local found
         result=$(get_snapshot $url $service_token "$stql" "true")
         echo $result > last_ebpf_conn_server_resp.txt
-        found=$(echo $result | jq -r "if .viewSnapshotResponse.components[] | select(.name == \"$componentName\") then \"found\" else \"not-found\" end")
-        echo $found
+        if [[ "$result" =~ ^..viewSnapshotResponse.* ]]; then
+          found=$(echo $result | jq -r "if .viewSnapshotResponse.components[] | select(.name == \"$componentName\") then \"found\" else \"not-found\" end")
+          echo $found
+        else
+          echo "invalid-server-reponse"
+        fi
     }
 
     get_component_state() {
@@ -107,7 +111,11 @@ vars:
         echo $stql > last_server_resp.txt
         result=$(get_snapshot $url $service_token "$stql" "false")
         echo $result >> last_server_resp.txt
-        echo $result | jq -r '.viewSnapshotResponse.components[0].state.healthState'
+        if [[ "$result" =~ ^..viewSnapshotResponse.* ]]; then
+          echo $result | jq -r '.viewSnapshotResponse.components[0].state.healthState'
+        else
+          echo "invalid-server-response"
+        fi
     }
 
     get_snapshot() {
