@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "brontosaurus-challenge.fullname" . }}
+  labels:
+    {{- include "brontosaurus-challenge.labels" . | nindent 4 }} 
+spec:
+  selector:
+    {{- include "brontosaurus-challenge.selectorLabels" . | nindent 6 }}
+  ports:
+    - protocol: TCP
+      port: 80      # Service port
+      targetPort: 8080 # Container port
+  type: ClusterIP     # Internal service within the Kubernetes cluster

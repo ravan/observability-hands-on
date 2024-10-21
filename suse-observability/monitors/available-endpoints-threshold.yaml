@@ -1,0 +1,45 @@
+nodes:
+- _type: Monitor
+  arguments:
+    comparator: LTE
+    failureState: DEVIATING
+    metric:
+      aliasTemplate: Total endpoint addresses
+      query: kubernetes_state_endpoint_address_available - kubernetes_state_endpoint_address_not_ready
+      unit: short
+    threshold: 0.0
+    titleTemplate: Available endpoints
+    urnTemplate: urn:kubernetes:/${cluster_name}:${namespace}:service/${endpoint}
+  description: |-
+    It is important to ensure that your services are available and accessible to users. To monitor this, we have set up a check that verifies if a service has at least one endpoint available. Endpoints are network addresses that enable communication between different components in a distributed system, and they need to be available for the service to function properly.
+    If there is an occurrence of zero endpoints available within the last 10 minutes, the monitor will remain in a deviating state, indicating that there may be an issue with the service that needs to be addressed.
+    To understand the full monitor definition check the details.
+  function: {{ get "urn:stackpack:common:monitor-function:threshold"  }}
+  id: -15
+  identifier: urn:custom:monitor:available-endpoints-threshold-v2
+  intervalSeconds: 30
+  name: Available endpoints V2
+  remediationHint: |-
+    Available service endpoints:The replicaset (deployment, statefulset, daemonset) underlying this issue has no pods in the ready state. Take the following steps to diagnose the problem:
+
+    1. Check the pods that should be attached to the service. They may be in a crash loop or have other issues that prevent them from reaching a ready state. This can be done by finding a pod in the table above, with the relation "dependency". Click on the pod name.
+    2. Verify if the readiness probe of the pods is correctly configured. The readiness probe is responsible for reporting the pod as ready or not ready based on the application-level health check. By:
+        1. Click on the pod name
+        2. Click on the left side of the pod screen on "Show Configuration"
+        3. Scroll down and validate if there is "readinessProbe".
+        4. If there is a readinessProbe validate if the correct parameters are site, like the correct port and correct path. E.g.
+
+    ```
+     readinessProbe:
+      httpGet:
+        path: /healthz
+        port: 808
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      failureThreshold: 3
+    ```
+
+    In this example, the `readinessProbe` configuration specifies that the pod's readiness should be checked by sending an HTTP GET request to the `/healthz` endpoint on port `808`. The probe will start running 5 seconds after the container starts, and will be repeated every 10 seconds. If the probe fails 3 times in a row, the pod will be marked as not ready. If the post is not opened on port 808 but on pot 8080 this make the pod restart because the readinessProbe will fail.
+  status: ENABLED
+  tags:
+  - services

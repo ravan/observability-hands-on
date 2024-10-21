@@ -17,8 +17,10 @@ vars:
     - urn:stackpack:kubernetes-v2:shared:monitor:kubernetes-v2:pod-span-duration
     - urn:stackpack:open-telemetry:shared:monitor:otel-service-span-duration
     - urn:stackpack:kubernetes-v2:shared:monitor:kubernetes-v2:k8s-service-span-error-ratio
+    - urn:stackpack:kubernetes-v2:shared:monitor:kubernetes-v2:available-endpoints-threshold
 
   CUSTOM_MONITORS:
+    - urn:custom:monitor:available-endpoints-threshold-v2
     - urn:custom:monitor:k8s-service-span-error-ratio-v2
     - urn:custom:monitor:otel-service-span-duration-v2
     - urn:custom:monitor:pod-span-duration-v2

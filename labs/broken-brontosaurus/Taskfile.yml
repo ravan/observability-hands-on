@@ -17,16 +17,19 @@ tasks:
           RELEASE: "{{.RELEASE_BRONTO}}"
           CHART: "{{.CHART_BRONTO}}"
           VALUES: |
-                  year: "2024"
+                  year: "-70000000"
 
   resolve:
+    deps: [setup]
+  
+  trigger:
     cmds:
       - task: :install-chart
         vars:
           RELEASE: "{{.RELEASE_BRONTO}}"
           CHART: "{{.CHART_BRONTO}}"
           VALUES: |
-                  year: "-70000000"
+                  year: "2024"
 
   teardown:
     cmds:

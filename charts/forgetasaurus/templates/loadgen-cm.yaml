@@ -28,19 +28,12 @@ data:
     // Define endpoints to test
     const endpoints = {
         list: `${BASE_URL}/list`,         // List endpoint triggers load on Raptoring Service
-        save: `${BASE_URL}/save`,         // Save endpoint triggers load as well
     };
 
     export default function () {
         // Simulate heavy "list" endpoint usage
         let listRes = http.get(endpoints.list);
         check(listRes, { 'Status was 200': (r) => r.status === 200 });
-
-        // Simulate occasional "save" endpoint usage
-        if (__ITER % 10 === 0) {
-            let saveRes = http.get(endpoints.save);
-            check(saveRes, { 'Status was 200': (r) => r.status === 200 });
-        }
 
         // Simulate delay between requests
         sleep(1);  // 1 second sleep simulates the delay between user interactions

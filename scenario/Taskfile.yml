@@ -12,6 +12,7 @@ version: '3'
 ######################################################################################
 
 vars:
+  DEFAULT_STABLE_PERIOD: "00:01:00"
   CLUSTER_STQL: "label = 'cluster-name:{{.CLUSTER_NAME}}'"
 
   MUSEUM_NS_STQL: "{{.CLUSTER_STQL}} AND label = 'namespace:museum'"
@@ -58,6 +59,11 @@ tasks:
      - echo -e "${Yellow} Started at $(date '+%T')  ${NC}" 
      - echo -e "${Green} Tearing down ${NC}"
      - task: :labs:brontosaurus:teardown   
+     - echo -e "${Green} Waiting for brontosaurus pod to be 'null' state ${NC}"
+     - task: :lib:waitForHealthState
+       vars:
+          STATE: "null"
+          STQL: "{{.BRONTOSAURUS_POD_STQL}}"
      - echo -e "${Yellow} Finished at $(date '+%T')  ${NC}" 
      - echo -e "${Green} Done ${NC}"
 
@@ -67,7 +73,7 @@ tasks:
      - echo -e "${Yellow} Started at $(date '+%T')  ${NC}" 
      - echo -e "${Blue} Started phase 1 at $(date '+%T')  ${NC}" 
      - echo -e "${Green} Deploying stable version ${NC}"
-     - task: :labs:brontosaurus:resolve   # deploy good version 
+     - task: :labs:brontosaurus:setup   # deploy good version 
      - echo -e "${Green} Wait for 'CLEAR' state ${NC}"
      - task: :lib:waitForHealthState
        vars:
@@ -76,12 +82,12 @@ tasks:
      - echo -e "${Green} Wait for a stable period ${NC}"
      - task: :lib:countdown
        vars:
-          TIME: "00:00:30"
+          TIME: "{{.DEFAULT_STABLE_PERIOD}}"
      - echo -e "${Blue} Finished phase 1 at $(date '+%T')  ${NC}" 
      - echo -e "${Blue} Started phase 2 at $(date '+%T')  ${NC}" 
      - echo -e "${Green} Deploying unstable version ${NC}"
-     - task: :labs:brontosaurus:teardown # remove old
-     - task: :labs:brontosaurus:setup   # deploy bad version 
+     - task: teardown-brontosaurus # don't want a rolling deployment because we will have 2 pods. one green and one red.
+     - task: :labs:brontosaurus:trigger   # deploy bad version 
      - echo -e "${Green} Waiting for 'CRITICAL' state ${NC}"
      - task: :lib:waitForHealthState
        vars:
@@ -97,6 +103,11 @@ tasks:
      - echo -e "${Yellow} Started at $(date '+%T')  ${NC}" 
      - echo -e "${Green} Tearing down ${NC}"
      - task: :labs:brontosaurus:resolve   
+     - echo -e "${Green} Wait for 'CLEAR' state ${NC}"
+     - task: :lib:waitForHealthState
+       vars:
+          STATE: "CLEAR"
+          STQL: "{{.BRONTOSAURUS_POD_STQL}}"
      - echo -e "${Yellow} Finished at $(date '+%T')  ${NC}" 
      - echo -e "${Green} Done ${NC}"
 
@@ -139,7 +150,7 @@ tasks:
      - echo -e "${Green} Allow for 1 agent cylce (45 second) stable period ${NC}"
      - task: :lib:countdown
        vars:
-          TIME: "00:00:50"
+          TIME: "{{.DEFAULT_STABLE_PERIOD}}"
      - echo -e "${Blue} Finished phase 1 at $(date '+%T') ${NC}" 
      - echo -e "${Blue} Started phase 2 at $(date '+%T') ${NC}" 
      - echo -e "${Green} Deploying unstable version ${NC}"
@@ -216,7 +227,7 @@ tasks:
      - echo -e "${Green} Allow for 1 agent cylce (45 second) stable period ${NC}"
      - task: :lib:countdown
        vars:
-          TIME: "00:00:50"
+          TIME: "{{.DEFAULT_STABLE_PERIOD}}"
      - echo -e "${Blue} Finished phase 1 at $(date '+%T') ${NC}" 
      - echo -e "${Blue} Started phase 2 at $(date '+%T') ${NC}" 
      - echo -e "${Green} Deploying unstable version ${NC}"
@@ -284,7 +295,7 @@ tasks:
      - echo -e "${Green} Allow for 1 agent cylce (45 second) stable period ${NC}"
      - task: :lib:countdown
        vars:
-          TIME: "00:00:50"
+          TIME: "{{.DEFAULT_STABLE_PERIOD}}"
      - echo -e "${Blue} Finished phase 1 at $(date '+%T') ${NC}" 
      - echo -e "${Blue} Started phase 2 at $(date '+%T') ${NC}" 
      - echo -e "${Green} Deploying unstable version ${NC}"
@@ -347,7 +358,7 @@ tasks:
      - echo -e "${Green} Wait for a stable period ${NC}"
      - task: :lib:countdown
        vars:
-          TIME: "00:00:30"
+          TIME: "{{.DEFAULT_STABLE_PERIOD}}"
      - echo -e "${Blue} Finished phase 1 at $(date '+%T')  ${NC}" 
      - echo -e "${Blue} Started phase 2 at $(date '+%T')  ${NC}" 
      - echo -e "${Green} Deploying unstable version ${NC}"
@@ -404,7 +415,7 @@ tasks:
      - echo -e "${Green} Wait for a stable period ${NC}"
      - task: :lib:countdown
        vars:
-          TIME: "00:00:30"
+          TIME: "{{.DEFAULT_STABLE_PERIOD}}"
      - echo -e "${Blue} Finished phase 1 at $(date '+%T')  ${NC}" 
      - echo -e "${Blue} Started phase 2 at $(date '+%T')  ${NC}" 
      - echo -e "${Green} Deploying unstable version ${NC}"

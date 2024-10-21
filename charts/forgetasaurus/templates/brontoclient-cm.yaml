@@ -15,16 +15,27 @@ data:
 
     [[endpoints]]
     uri = "/list"
-    delay = "<1ms>"
+    {{ if eq .Values.hungry "yes" }}
+    delay = "<1s>"
+    errorOnCall = 10
+    {{ else }}
+    delay = "1ms"
+    {{ end }}
+ 
+    {{ if eq .Values.hungry "yes" }}
+    [endpoints.errorLogging]
+    logOnCall = 3  # 10 fails * 3 = 1 log per 30 seconds
+    before = """
+     [[ $options := list "Come on, Forgetasaurus! I need answers faster than a Triceratops at an all-you-can-eat salad bar!" "Are you buffering or just napping again? I’ve seen fossils move quicker than this!" "I asked for data, not dino brain farts! What’s with the disappearing memory act?" ]]
+     [[ $i := randInt 0 3 ]]
+     [[- index $options $i ]]
+    """
+    {{ end }}
+
 
     [[endpoints.routes]]
     uri = "raptoring/fetch-data"
     delay = "1ms"
     stopOnFail = false
 
-    [[endpoints]]
-    uri = "/save"
-    delay = "1ms<>2ms"
-    errorOnCall = 20
-    body.status = "ok"
-    body.msg = "data saved"
+   

@@ -33,6 +33,24 @@ data:
     body.status = "ok"
     body.msg = "data fetched from TyrannoDB"
 
+    [endpoints.logging]
+    {{ if eq .Values.hungry "yes" }}
+    logOnCall = 60 # the load test is 1 req/sec
+    before = """
+     [[ $options := list "Wait... did I just forget what I forgot? Oh no, it’s happening again!" "Who needs memory when you can have a nice, empty head like mine!" "I swear I had that stored somewhere... oh well, guess we’ll never know!" ]]
+     [[ $i := randInt 0 3 ]]
+     [[- index $options $i ]]
+    """
+    {{ else }}
+    logOnCall = 60 # the load test is 1 req/sec
+    before = """
+     [[ $options := list "I'm a master! I never forget... uh, what was I saying?" "Running smooth as dino scales—nothing escapes my brain!" "My brain’s got more space than a T-rex dinner party." ]]
+     [[ $i := randInt 0 3 ]]
+     [[- index $options $i ]]
+    """
+    {{ end }}
+
+
     [[endpoints.routes]]
     uri = "tyrannodb/get"
     delay = "2ms"

@@ -36,7 +36,7 @@ Common labels
 */}}
 {{- define "common.labels" -}}
 helm.sh/chart: {{ include "common.chart" . }}
-{{ include "brontosaurus-challenge.selectorLabels" . }}
+{{ include "common.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
