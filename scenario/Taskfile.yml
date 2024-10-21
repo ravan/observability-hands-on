@@ -12,7 +12,7 @@ version: '3'
 ######################################################################################
 
 vars:
-  DEFAULT_STABLE_PERIOD: "00:01:00"
+  DEFAULT_STABLE_PERIOD: "00:05:00"
   CLUSTER_STQL: "label = 'cluster-name:{{.CLUSTER_NAME}}'"
 
   MUSEUM_NS_STQL: "{{.CLUSTER_STQL}} AND label = 'namespace:museum'"
@@ -443,7 +443,7 @@ tasks:
      - echo -e "${Green} Wait for a stable period ${NC}"
      - task: :lib:countdown
        vars:
-          TIME: "00:02:00" #  2 minutes for larger green period to find back later.
+          TIME: "{{.DEFAULT_STABLE_PERIOD}}"
      - echo -e "${Blue} Finished phase 1 at $(date '+%T')  ${NC}" 
      - echo -e "${Blue} Started phase 2 at $(date '+%T')  ${NC}" 
      - echo -e "${Green} Deploying unstable version ${NC}"

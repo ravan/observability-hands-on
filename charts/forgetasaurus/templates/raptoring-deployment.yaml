@@ -31,7 +31,12 @@ spec:
         ports:
         - containerPort: 8080
         resources:
-          {{- toYaml .Values.resources | nindent 12 }}
+         requests:
+           memory: '8Mi'
+           cpu: '70m'
+         limits:
+           memory: '10Mi'
+           cpu: '100m' 
         volumeMounts:
         - name: config-volume
           mountPath: /etc/app

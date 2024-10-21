@@ -18,10 +18,10 @@ resources:
 # Default resources when tracing turned on
 resourcesWhenTracing:
   requests:
-    memory: '8Mi'
+    memory: '15Mi'
     cpu: '18m'
   limits:
-    memory: '10Mi'
+    memory: '18Mi'
     cpu: '20m'
 
 brontoResources:
@@ -34,10 +34,10 @@ brontoResources:
 
 brontoResourcesWhenTracing:
   requests:
-    memory: '12Mi'
+    memory: '15Mi'
     cpu: '50m'
   limits:
-    memory: '14Mi'
+    memory: '18Mi'
     cpu: '55m'
 
 pteropostResources:
@@ -50,10 +50,10 @@ pteropostResources:
 
 pteropostResourcesWhenTracing:
     requests:
-      memory: '10Mi'
+      memory: '15Mi'
       cpu: '100m'
     limits:
-      memory: '12Mi'
+      memory: '18Mi'
       cpu: '110m'
 
 triceratopsResourcesWhenNapping:
