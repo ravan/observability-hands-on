@@ -374,8 +374,8 @@ tasks:
      - echo -e "${Yellow} Started at $(date '+%T')  ${NC}" 
      - echo -e "${Blue} Started phase 1 at $(date '+%T')  ${NC}" 
      - echo -e "${Green} Deploying stable version ${NC}"
-     - task: :labs:brontosaurus:setup   # deploy good version 
-     - echo -e "${Green} Wait for 'CLEAR' state ${NC}"
+     - task: :labs:configosaurus:setup   # deploy good version 
+     - echo -e "${Green} Wait for configurosaurs pod to have 'CLEAR' state ${NC}"
      - task: :lib:waitForHealthState
        vars:
           STATE: "CLEAR"
@@ -388,10 +388,10 @@ tasks:
      - echo -e "${Blue} Started phase 2 at $(date '+%T')  ${NC}" 
      - echo -e "${Green} Deploying unstable version ${NC}"
      - task: :labs:configosaurus:trigger   # deploy bad version 
-     - echo -e "${Green} Waiting for 'CLEAR' state ${NC}"
+     - echo -e "${Green} Waiting for configurosaurus pod to have 'CLEAR' state ${NC}"
      - task: :lib:waitForHealthState
        vars:
-          STATE: "CRITICAL"
+          STATE: "CLEAR"
           STQL: "{{.CONFIGOSAURUS_POD_STQL}}"
      - echo -e "${Blue} Finished phase 2 at $(date '+%T')  ${NC}" 
      - echo -e "${Yellow} Finished at $(date '+%T')  ${NC}" 
@@ -403,7 +403,7 @@ tasks:
      - echo -e "${Yellow} Started at $(date '+%T')  ${NC}" 
      - echo -e "${Green} Deploying stable version ${NC}"
      - task: :labs:configosaurus:resolve  # deploy good version 
-     - echo -e "${Green} Wait for certosaurus pod to have 'CLEAR' state ${NC}"
+     - echo -e "${Green} Wait for configosaurus pod to have 'CLEAR' state ${NC}"
      - task: :lib:waitForHealthState
        vars:
           STATE: "CLEAR"
