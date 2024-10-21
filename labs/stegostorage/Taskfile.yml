@@ -19,25 +19,26 @@ tasks:
           CHART: "{{.CHART_STEGO}}" 
           NAMESPACE: "{{.NAMESPACE_STEGO}}" 
           VALUES: |
-                  topClass: "no"
+                  topClass: "yes"
 
   resolve:
    deps:
       - teardown
    cmds:
+      - task: setup
+ 
+  trigger:
+    deps:
+      - teardown
+    cmds:
       - task: :install-chart
         vars:
           RELEASE: "{{.RELEASE_STEGO}}"
           CHART: "{{.CHART_STEGO}}" 
           NAMESPACE: "{{.NAMESPACE_STEGO}}" 
           VALUES: |
-                  topClass: "yes"
+                  topClass: "no"
  
-  trigger:
-    deps:
-      - teardown
-    cmds:
-      - task: setup
 
   teardown:
     ignore_error: true

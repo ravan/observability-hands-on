@@ -43,7 +43,8 @@ vars:
   CONFIGOSAURUS_POD_STQL: "label = 'app:configosaurus' AND type = 'pod' AND {{.MUSEUM_NS_STQL}}"
 
   # Stegosaurus Lab
-  STEGOSAURUS_POD_STQL: "label = 'app:stegosaurus' AND type = 'pod' AND {{.MUSEUM_NS_STQL}}"
+  STEGOSTORAGE_POD_STQL: "label = 'app:stegostorage' AND type = 'pod' AND {{.MUSEUM_NS_STQL}}"
+  STEGOSTORAGE_PVC_STQL: "name = 'stegostorage-pvc' AND type = 'persistent-volume-claim' AND {{.MUSEUM_NS_STQL}}"
 
 tasks:
   clean:
@@ -413,59 +414,60 @@ tasks:
 
   ############################################################################################################
 
-  teardown-stegosaurus:
+  teardown-stegostorage:
     silent: true
     cmds:
      - echo -e "${Yellow} Started at $(date '+%T')  ${NC}" 
      - echo -e "${Green} Tearing down ${NC}"
-     - task: :labs:stegosaurus:teardown  
-     - echo -e "${Green} Waiting for stegosaurus pod to be 'null' state ${NC}"
+     - task: :labs:stegostorage:teardown  
+     - echo -e "${Green} Waiting for stegostorage pod to be 'null' state ${NC}"
      - task: :lib:waitForHealthState
        vars:
           STATE: "null"
-          STQL: "{{.STEGOSAURUS_POD_STQL}}"
+          STQL: "{{.STEGOSTORAGE_POD_STQL}}"
      - echo -e "${Yellow} Finished at $(date '+%T')  ${NC}" 
      - echo -e "${Green} Done ${NC}" 
 
-  setup-stegosaurus:
+  setup-stegostorage:
     silent: true
     cmds:
      - echo -e "${Yellow} Started at $(date '+%T')  ${NC}" 
      - echo -e "${Blue} Started phase 1 at $(date '+%T')  ${NC}" 
      - echo -e "${Green} Deploying stable version ${NC}"
-     - task: :labs:stegosaurus:resolve   # deploy good version 
-     - echo -e "${Green} Wait for 'CLEAR' state ${NC}"
+     - task: :labs:stegostorage:setup   # deploy good version 
+     - echo -e "${Green} Wait for stegostorage pod to have 'CLEAR' state ${NC}"
      - task: :lib:waitForHealthState
        vars:
           STATE: "CLEAR"
-          STQL: "{{.STEGOSAURUS_POD_STQL}}"
+          STQL: "{{.STEGOSTORAGE_POD_STQL}}"
      - echo -e "${Green} Wait for a stable period ${NC}"
      - task: :lib:countdown
        vars:
-          TIME: "{{.DEFAULT_STABLE_PERIOD}}"
+          TIME: "00:02:00" #  2 minutes for larger green period to find back later.
      - echo -e "${Blue} Finished phase 1 at $(date '+%T')  ${NC}" 
      - echo -e "${Blue} Started phase 2 at $(date '+%T')  ${NC}" 
      - echo -e "${Green} Deploying unstable version ${NC}"
-     - task: :labs:configosaurus:trigger   # deploy bad version 
-     - echo -e "${Green} Waiting for 'CLEAR' state ${NC}"
+     - task: teardown-stegostorage
+     - task: :labs:stegostorage:trigger   # deploy bad version 
+     - echo -e "${Green} Waiting for stegostorage-pvc to have 'CRITICAL' state ${NC}"
      - task: :lib:waitForHealthState
        vars:
           STATE: "CRITICAL"
-          STQL: "{{.STEGOSAURUS_POD_STQL}}"
+          STQL: "{{.STEGOSTORAGE_PVC_STQL}}"
      - echo -e "${Blue} Finished phase 2 at $(date '+%T')  ${NC}" 
      - echo -e "${Yellow} Finished at $(date '+%T')  ${NC}" 
      - echo -e "${Green} Done ${NC}"   
 
-  resolve-stegosaurus:
+  resolve-stegostorage:
     silent: true
     cmds:
      - echo -e "${Yellow} Started at $(date '+%T')  ${NC}" 
      - echo -e "${Green} Deploying stable version ${NC}"
-     - task: :labs:stegosaurus:resolve  # deploy good version 
-     - echo -e "${Green} Wait for stegosaurus pod to have 'CLEAR' state ${NC}"
+     - task: :labs:stegostorage:resolve  # deploy good version 
+     - echo -e "${Green} Wait for stegostorage pod to have 'CLEAR' state ${NC}"
      - task: :lib:waitForHealthState
        vars:
           STATE: "CLEAR"
-          STQL: "{{.STEGOSAURUS_POD_STQL}}"
+          STQL: "{{.STEGOSTORAGE_POD_STQL}}"
      - echo -e "${Yellow} Finished at $(date '+%T')  ${NC}" 
      - echo -e "${Green} Done ${NC}"
