@@ -23,13 +23,12 @@ This repository contain various kubernetes challenges that showcase's Suse Obser
 ## Prerequisites
 
 - [Taskfile](https://taskfile.dev/installation/)
+    - `task` cli supports tab completion which is handy to see available tasks.
 - [Helm](https://helm.sh/docs/intro/install/)
 - [Lima](https://lima-vm.io/docs/installation/)
 
 You will also need access to a Suse Observability instance.
 
-> [!TIP]
-> `task` supports tab completion
 
 ## Environment 
 
