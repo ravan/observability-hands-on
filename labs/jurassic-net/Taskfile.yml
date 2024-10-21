@@ -19,9 +19,9 @@ tasks:
           CHART: "{{.CHART_CERT}}" 
           NAMESPACE: "{{.NAMESPACE_CERT}}" 
           VALUES: |
-                  subscription: "no"
+                  subscription: "yes"
 
-  resolve:
+  trigger:
    cmds:
       - task: :install-chart
         vars:
@@ -29,9 +29,9 @@ tasks:
           CHART: "{{.CHART_CERT}}" 
           NAMESPACE: "{{.NAMESPACE_CERT}}" 
           VALUES: |
-                  subscription: "yes"
+                  subscription: "no"
  
-  trigger:
+  resolve:
     deps:
       - setup
 

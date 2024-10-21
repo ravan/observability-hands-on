@@ -18,8 +18,10 @@ vars:
     - urn:stackpack:open-telemetry:shared:monitor:otel-service-span-duration
     - urn:stackpack:kubernetes-v2:shared:monitor:kubernetes-v2:k8s-service-span-error-ratio
     - urn:stackpack:kubernetes-v2:shared:monitor:kubernetes-v2:available-endpoints-threshold
+    - urn:stackpack:kubernetes-v2:shared:monitor:kubernetes-v2:certificate-expiration
 
   CUSTOM_MONITORS:
+    - urn:custom:monitor:certificate-expiration-v2
     - urn:custom:monitor:available-endpoints-threshold-v2
     - urn:custom:monitor:k8s-service-span-error-ratio-v2
     - urn:custom:monitor:otel-service-span-duration-v2

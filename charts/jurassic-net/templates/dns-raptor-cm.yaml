@@ -13,7 +13,7 @@ data:
      {{ if eq .Values.subscription "yes"}}
      delay = "10ms"
      {{ else }}
-     delay = "<1s>"
+     delay = "1500ms"
      {{ end }}
      body.status = "ok"
      body.msg = "Routing request"
@@ -23,7 +23,8 @@ data:
      {{ if eq .Values.subscription "yes"}}
      delay = "10ms"
      {{ else }}
-     delay = "1s"
+     delay = "<2s>"
+     errorOnCall = 20
      {{ end }} 
 
      

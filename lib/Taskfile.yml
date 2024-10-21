@@ -49,6 +49,11 @@ tasks:
             echo "Component reached state of '$state'"
             break
           fi
+          if test "$state" == "CRITICAL" && test "{{.STATE}}" == "DEVIATING"; then
+            echo "Component reached state of '$state'"
+            break
+          fi
+          
           printf "Current: '$state'\r"
           {{.ELAPSED_TIMER}} 
         done

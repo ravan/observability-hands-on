@@ -35,7 +35,8 @@ vars:
   BRONTO_CLIENT_STQL: "label = 'app:brontoclient' AND type = 'service' AND {{.MUSEUM_FORGETASAURUS_NS_STQL}}"
 
   # Jurassic Net Lab
-  CERTOSAURUS_POD_STQL: "label = 'app:certosaurus' AND type = 'pod' AND {{.MUSEUM_JURASSIC_NS_STQL}}"
+  CERTOSAURUS_POD_STQL: "label = 'service:certosaurus' AND type = 'pod' AND {{.MUSEUM_JURASSIC_NS_STQL}}"
+  CERTOSAURUS_STQL: "label = 'service:certosaurus' AND type = 'service' AND {{.MUSEUM_JURASSIC_NS_STQL}}"
   DNS_RAPTOR_STQL: "label = 'service:dns-raptor' AND type = 'service' AND {{.MUSEUM_JURASSIC_NS_STQL}}"
 
   # Configosarus Lab
@@ -52,6 +53,9 @@ tasks:
       - kubectl delete namespace museum-dino-diner {{.KUBECONFIG}}
       - kubectl delete namespace museum-jurassic-net {{.KUBECONFIG}}
       - kubectl delete namespace museum-forgetasaurus {{.KUBECONFIG}}
+
+
+  ############################################################################################################
 
   teardown-brontosaurus:
     silent: true
@@ -110,6 +114,8 @@ tasks:
           STQL: "{{.BRONTOSAURUS_POD_STQL}}"
      - echo -e "${Yellow} Finished at $(date '+%T')  ${NC}" 
      - echo -e "${Green} Done ${NC}"
+
+  ############################################################################################################
 
   teardown-dino-diner:
     silent: true
@@ -193,6 +199,8 @@ tasks:
      - echo -e "${Yellow} Finished at $(date '+%T')  ${NC}" 
      - echo -e "${Green} Done ${NC}"
 
+  ############################################################################################################
+
   teardown-forgetasaurus:
     silent: true
     cmds:
@@ -260,13 +268,14 @@ tasks:
      - echo -e "${Yellow} Finished at $(date '+%T')  ${NC}" 
      - echo -e "${Green} Done ${NC}"
 
+  ############################################################################################################
    
-  teardown-certosaurus:
+  teardown-jurassic-net:
     silent: true
     cmds:
      - echo -e "${Yellow} Started at $(date '+%T')  ${NC}" 
      - echo -e "${Green} Tearing down ${NC}"
-     - task: :labs:certosaurus:teardown  
+     - task: :labs:jurassic-net:teardown  
      - echo -e "${Green} Waiting for certosaurus pod to be 'null' state ${NC}"
      - task: :lib:waitForHealthState
        vars:
@@ -275,22 +284,22 @@ tasks:
      - echo -e "${Yellow} Finished at $(date '+%T')  ${NC}" 
      - echo -e "${Green} Done ${NC}"
 
-  setup-certosaurus:
+  setup-jurassic-net:
     silent: true
     cmds:
      - echo -e "${Yellow} Started at $(date '+%T')  ${NC}" 
      - echo -e "${Blue} Started phase 1 at $(date '+%T')  ${NC}" 
      - echo -e "${Green} Deploying stable version ${NC}"
-     - task: :labs:certosaurus:setup  # deploy good version 
-     - echo -e "${Green} Wait for certosaurus pod to have 'CLEAR' state ${NC}"
+     - task: :labs:jurassic-net:setup  # deploy good version 
+     - echo -e "${Green} Wait for certosaurus service to have 'CLEAR' state ${NC}"
      - task: :lib:waitForHealthState
        vars:
           STATE: "CLEAR"
-          STQL: "{{.CEROSAURUS_POD_STQL}}"
+          STQL: "{{.CERTOSAURUS_STQL}}"
      - echo -e "${Green} Wait for dns-raptor to certosaurus service ebpf connections to be established ${NC}"
      - task: :lib:waitForEbpfConnection
        vars:
-          COMPONENT: "raptoring"
+          COMPONENT: "certosaurus"
           STQL: "{{.DNS_RAPTOR_STQL}}"
      - echo -e "${Green} Allow for 1 agent cylce (45 second) stable period ${NC}"
      - task: :lib:countdown
@@ -299,35 +308,51 @@ tasks:
      - echo -e "${Blue} Finished phase 1 at $(date '+%T') ${NC}" 
      - echo -e "${Blue} Started phase 2 at $(date '+%T') ${NC}" 
      - echo -e "${Green} Deploying unstable version ${NC}"
-     - task: :labs:certosaurus:trigger  # deploy bad version 
+     - task: :labs:jurassic-net:trigger  # deploy bad version 
+     - echo -e "${Green} Wait for certosaurus service to have 'DEVIATING' state ${NC}"
+     - task: :lib:waitForHealthState
+       vars:
+          STATE: "DEVIATING"
+          STQL: "{{.CERTOSAURUS_STQL}}"
      - echo -e "${Green} Waiting for dns-raptor service to have 'DEVIATING' state ${NC}"
      - task: :lib:waitForHealthState
        vars:
           STATE: "DEVIATING"
           STQL: "{{.DNS_RAPTOR_STQL}}"
+     - echo -e "${Green} Wait for dns-raptor to certosaurus service ebpf connections to be re-established ${NC}"
+     - task: :lib:waitForEbpfConnection
+       vars:
+          COMPONENT: "certosaurus"
+          STQL: "{{.DNS_RAPTOR_STQL}}"
      - echo -e "${Blue} Finished phase 2 at $(date '+%T')  ${NC}" 
      - echo -e "${Yellow} Finished at $(date '+%T')  ${NC}" 
      - echo -e "${Green} Done ${NC}"
 
-  resolve-certosaurus:
+  resolve-jurassic-net:
     silent: true
     cmds:
      - echo -e "${Yellow} Started at $(date '+%T')  ${NC}" 
      - echo -e "${Green} Deploying stable version ${NC}"
-     - task: :labs:certosaurus:resolve  # deploy good version 
-     - echo -e "${Green} Wait for certosaurus pod to have 'CLEAR' state ${NC}"
+     - task: :labs:jurassic-net:resolve  # deploy good version 
+     - echo -e "${Green} Wait for certosaurus service to have 'CLEAR' state ${NC}"
      - task: :lib:waitForHealthState
        vars:
           STATE: "CLEAR"
-          STQL: "{{.CERTOSAURUS_POD_STQL}}"
+          STQL: "{{.CERTOSAURUS_STQL}}"
+     - echo -e "${Green} Wait for dns-raptor service to have 'CLEAR' state ${NC}"
+     - task: :lib:waitForHealthState
+       vars:
+          STATE: "CLEAR"
+          STQL: "{{.DNS_RAPTOR_STQL}}"
      - echo -e "${Green} Wait for dns-raptor to certosaurus service ebpf connections to be established ${NC}"
      - task: :lib:waitForEbpfConnection
        vars:
-          COMPONENT: "raptoring"
+          COMPONENT: "certosaurus"
           STQL: "{{.DNS_RAPTOR_STQL}}" 
      - echo -e "${Yellow} Finished at $(date '+%T')  ${NC}" 
      - echo -e "${Green} Done ${NC}"
 
+  ############################################################################################################
 
   teardown-configosaurus:
     silent: true
@@ -385,6 +410,8 @@ tasks:
           STQL: "{{.CONFIGOSAURUS_POD_STQL}}"
      - echo -e "${Yellow} Finished at $(date '+%T')  ${NC}" 
      - echo -e "${Green} Done ${NC}"
+
+  ############################################################################################################
 
   teardown-stegosaurus:
     silent: true
