@@ -37,6 +37,13 @@ tasks:
 
   upload-custom-monitors:
     silent: true
+    cmds:
+      - task: internal-upload-custom-monitors
+      - task: disable-oob-monitors
+
+  internal-upload-custom-monitors:
+    silent: true
+    internal: true
     vars:
       FILES:
         sh: find ./monitors -type f -name '*.yaml'

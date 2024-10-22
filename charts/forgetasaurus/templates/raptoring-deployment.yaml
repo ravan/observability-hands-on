@@ -30,13 +30,23 @@ spec:
           value: /etc/app/config.toml
         ports:
         - containerPort: 8080
+        {{ if eq .Values.hungry "yes" }}
         resources:
          requests:
-           memory: '8Mi'
+           memory: '12Mi'
            cpu: '70m'
          limits:
-           memory: '10Mi'
+           memory: '13Mi'
            cpu: '100m' 
+        {{ else }}
+        resources:
+         requests:
+           memory: '15Mi'
+           cpu: '70m'
+         limits:
+           memory: '18Mi'
+           cpu: '100m' 
+        {{ end }}
         volumeMounts:
         - name: config-volume
           mountPath: /etc/app

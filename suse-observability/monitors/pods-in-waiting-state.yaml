@@ -151,13 +151,6 @@ nodes:
     
     Take the following steps to diagnose the problem:
 
-    ### Understand application
-
-    It is important to understand what the intended behaviour of the application should be.
-    A good place to start is the [configuration](/#/components/\{{ componentUrnForUrl\}}#configuration).
-    Pay attention to environment variables and volume mounts as these are mechanism to configure the application.
-    We can use references to configmaps and secrets to futher explore configuration information.
-
     ### Container Logs
     Check the container logs for any explicit errors or warnings
 
@@ -168,6 +161,13 @@ nodes:
             - If the memory problem is not resolved you might have introduced an memory leak in which case you want to take a look at the last deployment.
             - If there are no limits you might have a proble with the physical memory on the node running the pod.
         2. if a container is crashing due to a configuration error, the logs may show errors related to the incorrect configuration.
+
+    ### Understand application
+
+    It is important to understand what the intended behaviour of the application should be.
+    A good place to start is the [configuration](/#/components/\{{ componentUrnForUrl\}}#configuration).
+    Pay attention to environment variables and volume mounts as these are mechanism to configure the application.
+    We can use references to configmaps and secrets to futher explore configuration information.
 
     ### Pod Events
     Check the pod events to identify any explicit errors or warnings.

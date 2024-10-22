@@ -16,7 +16,7 @@ data:
         stages: [
             { duration: '30s', target: 5 }, // ramp-up to 20 users
             { duration: '1m', target: 10 },  // ramp-up to 50 users
-            { duration: '24h', target: 15 }, // ramp-up to 100 users
+            { duration: '48h', target: 15 }, // ramp-up to 100 users
             { duration: '30s', target: 10 }, // ramp-down to 50 users
             { duration: '30s', target: 0 },  // ramp-down to 0 users
         ],

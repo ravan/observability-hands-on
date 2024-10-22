@@ -17,9 +17,9 @@ data:
     {{ if eq .Values.hungry "yes" }}
     [memstress]
     enabled = true
-    delay = "45s"
+    delay = "2m"
     memSize = "5 mb"
-    growthTime = "45s"
+    growthTime = "2m"
 
     [stressng]
     enabled = false
@@ -28,8 +28,13 @@ data:
 
     [[endpoints]]
     uri = "/fetch-data"
-    delay = "<2ms>"
+    {{ if eq .Values.hungry "yes" }}
+    delay = ">3s"
+    errorOnCall = 20
+    {{ else }}
+    delay = "<10ms>"
     errorOnCall = 0
+    {{ end }}
     body.status = "ok"
     body.msg = "data fetched from TyrannoDB"
 

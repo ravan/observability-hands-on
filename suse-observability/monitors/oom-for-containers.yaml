@@ -25,24 +25,39 @@ nodes:
     This can cause the container to terminate, leading to issues such as lost data, service interruption, and increased
     resource usage.
 
+    Check the container [Logs](/#/components/\{{ componentUrnForUrl \}}#logs) for any hints on how the application is behaving.
+
+    ### Recognize a memory leak
+
+    A memory leak can be recognized by looking at the "Memory Usage" metric on the [pod metrics page](/#/components/\{{ componentUrnForUrl \}}/metrics).
+    
+    If the metric resembles a `saw-tooth` pattern that is a clear indication of a slow memory leak being present in your application.
+    The memory usage increases over time, but the memory is not released until the container is restarted. 
+
+    If the metric resembles a `dash` pattern that is an indication of a memory leak via a spike.
+    The memory usage suddenly increases that causes the limit to be violated and the container killed.
+    
+    You will notice that the container continually restarts.
+
     Common issues that can cause this problem include:
     1. New deployments that introduce a memory leak.
     2. Elevated traffic that causes a temporary increase of memory usage.
     3. Incorrectly configured memory limits.
 
-    ## 1. New deployments that introduce a memory leak
-    A memory leak can be recognized by looking at the "Memory Usage" metric on the [pod metrics page](/#/components/\{{ componentUrnForUrl \}}/metrics). If the metric resembles a saw-tooth pattern that is a clear indication of a memory leak being present in your application. The memory usage increases over time, but the memory is not released until the container is restarted. You will notice that the container continually restarts. If this behaviour is new, it is likely that a new deployment introduced a memory leak.
+    ### 1. New deployments that introduce a memory leak
+
+    If the memory leak behaviour is new, it is likely that a new deployment introduced a memory leak.
 
     This can be checked by looking at the Events shown on the [pod highlights page](/#/components/\{{ componentUrnForUrl \}}/highlights) and checking whether a `Deployment` event happened recently after which the memory usage behaviour changed.
 
-    If the memory leak is caused by a deployment, you can investigate which change led to the memory leak by clicking the "Show last change" button, which will highlight the latest changeset for the deployment. You can then revert the change or fix the memory leak.
+    If the memory leak is caused by a deployment, you can investigate which change led to the memory leak by checking the [Show last change](/#/components/\{{ componentUrnForUrl \}}#lastChange), which will highlight the latest changeset for the deployment. You can then revert the change or fix the memory leak.
 
-    ## 2. Elevated traffic that causes a temporary increase of memory usage
+    ### 2. Elevated traffic that causes a temporary increase of memory usage
     This can be checked by looking at the "Network Throughput for pods (received)" metric on the [pod metrics page](/#/components/\{{ componentUrnForUrl \}}/metrics) and comparing the usage to the "Memory Usage" metric. If the memory usage increases at the same time as the network throughput, it is likely that the memory usage is caused by the increased traffic.
 
     As a temporary fix you can elevate the memory limit for the container. However, this is not a long-term solution as the memory usage will likely increase again in the future. You can also consider using Kubernetes autoscaling feature to scale up and down the number of replicas based on resource usage.
 
-    ## 3. Incorrectly configured memory Limits
+    ### 3. Incorrectly configured memory Limits
     This can be checked by looking at the "Memory Usage" metric on the [pod metrics page](/#/components/\{{ componentUrnForUrl \}}/metrics) and comparing the usage to the requests and limits set for the pod. If the memory usage is higher than the limit set for the pod, the container will be terminated by the OOM killer.
 
     To fix this issue, you can increate the memory limit for the pod, by changing the Kubernetes resource YAML and increasing the memory limit values e.g.

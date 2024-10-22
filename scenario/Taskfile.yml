@@ -91,7 +91,7 @@ tasks:
      - echo -e "${Blue} Finished phase 1 at $(date '+%T')  ${NC}" 
      - echo -e "${Blue} Started phase 2 at $(date '+%T')  ${NC}" 
      - echo -e "${Green} Deploying unstable version ${NC}"
-     - task: teardown-brontosaurus # don't want a rolling deployment because we will have 2 pods. one green and one red.
+    #  - task: teardown-brontosaurus # don't want a rolling deployment because we will have 2 pods. one green and one red.
      - task: :labs:brontosaurus:trigger   # deploy bad version 
      - echo -e "${Green} Waiting for 'CRITICAL' state ${NC}"
      - task: :lib:waitForHealthState
@@ -154,7 +154,7 @@ tasks:
        vars:
           COMPONENT: "pteropost"
           STQL: "{{.BRONTO_BURGER_STQL}}"
-     - echo -e "${Green} Allow for 1 agent cylce (45 second) stable period ${NC}"
+     - echo -e "${Green} Allow for 5 minute normal stable period ${NC}"
      - task: :lib:countdown
        vars:
           TIME: "{{.DEFAULT_STABLE_PERIOD}}"
@@ -233,7 +233,7 @@ tasks:
        vars:
           COMPONENT: "raptoring"
           STQL: "{{.BRONTO_CLIENT_STQL}}"
-     - echo -e "${Green} Allow for 1 agent cylce (45 second) stable period ${NC}"
+     - echo -e "${Green} Allow for 5 minute normal stable period ${NC}"
      - task: :lib:countdown
        vars:
           TIME: "{{.DEFAULT_STABLE_PERIOD}}"
@@ -302,7 +302,7 @@ tasks:
        vars:
           COMPONENT: "certosaurus"
           STQL: "{{.DNS_RAPTOR_STQL}}"
-     - echo -e "${Green} Allow for 1 agent cylce (45 second) stable period ${NC}"
+     - echo -e "${Green} Allow for 5 minute normal stable period ${NC}"
      - task: :lib:countdown
        vars:
           TIME: "{{.DEFAULT_STABLE_PERIOD}}"
