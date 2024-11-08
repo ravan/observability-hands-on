@@ -2,49 +2,78 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: printing-queue-cm
-  labels:
+  labels: 
     {{- include "common.labels" . | nindent 4 }}
 data:
   config.toml: |
-     
-     
-     # General configuration
-     port = 8080
-     address = "0.0.0.0"
-     serviceName = "Printing Queue"
-     logLevel = "info"
-     
-     # Endpoints
-     [[endpoints]]
-     uri = "/put"
-     delay = "5ms"
-     errorOnCall = 0 
-     body.status = "success"
-     body.msg = "Job added to queue"
-     
-     [[endpoints]]
-     uri = "/get"
-     delay = "10ms"
-     errorOnCall = 0
-     body.status = "success"
-     body.msg = "Next job retrieved from queue"
-     
-     [endpoints.logging]
-     before = "Processing [[.Endpoint.Uri]] request"
-     beforeLevel = "Info"
-     after = "Completed [[.Endpoint.Uri]] request"
-     afterLevel = "Info"
-     
-     
-     
-     
-     [otel.trace]
-     enabled = {{.Values.traceEnabled}}
-     tracer-name = "printing-queue"
-     http-endpoint = "{{.Values.otelHttpEndpoint}}"
-     insecure = true
 
-     [otel.metrics]
-     enabled = {{.Values.metricsEnabled}}
-     http-endpoint = "{{.Values.otelHttpEndpoint}}" 
-     insecure = true
+
+    # General configuration
+    port = 8080
+    address = "0.0.0.0"
+    serviceName = "Printing Queue"
+    logLevel = "info"
+
+    [logging]
+    logOnCall = 1
+    before = "Queue is open for business!"
+
+    # Stress the CPU as well to simulate overloading
+    [stressng]
+    enabled = {{ if eq .Values.blockQueue "yes" }}true{{ else }}false{{ end }}
+    delay = "10s"
+    args = ["--cpu", "1", "--cpu-load", "2"]
+
+    # Endpoints
+    [[endpoints]]
+    uri = "/put"
+    body.status = "success"
+    body.msg = "Job added to queue"
+    {{ if eq .Values.blockQueue "yes" }}
+    delay = "<200ms>" # Simulate variable delay before processing
+    errorOnCall = 2 
+    {{ else }}
+    delay = "5ms"
+    errorOnCall = 0
+    {{ end }}
+
+    [[endpoints]]
+    uri = "/get"
+    body.status = "success"
+    body.msg = "Next job retrieved from queue"
+    {{ if eq .Values.blockQueue "yes" }}
+    delay = "<100ms>" # Simulate variable delay before processing
+    errorOnCall = 5 
+    {{ else }}
+    delay = "10ms"
+    errorOnCall = 0
+    {{ end }}
+
+    {{ if eq .Values.blockQueue "yes" }}
+    [endpoints.errorLogging]
+    logOnCall = 5  # 10 fails * 3 = 1 log per 30 seconds
+    before = """
+    [[ $options := list "Uh-oh, the dino job got lost in the Mesozoic void. Someone call IT-ceratops!" "Oops, the queue’s backed up like a dino traffic jam! Try again in a few million years… or maybe a few seconds." "The queue just went extinct! Looks like this dino job isn’t making it to the printer today." ]]
+    [[ $i := randInt 0 3 ]]
+    [[- index $options $i ]]
+    """
+    {{ else }}
+    [endpoints.logging]
+  logOnCall = 5u # the load test is 1 req/sec
+    before = """
+    [[ $options := list "Dino job added to the queue. Prehistoric production line is on track!" "Smooth as a T-Rex’s stride! Next print job retrieved and ready for action." "Job successfully passed to the 3D printer. Looks like this dino is one step closer to roaming free!" ]]
+    [[ $i := randInt 0 3 ]]
+    [[- index $options $i ]]
+    """
+    {{ end }}
+
+    [otel.trace]
+    enabled = {{.Values.traceEnabled}}
+    tracer-name = "printing-queue"
+    http-endpoint = "{{.Values.otelHttpEndpoint}}"
+    insecure = true
+
+    [otel.metrics]
+    enabled = {{.Values.metricsEnabled}}
+    http-endpoint = "{{.Values.otelHttpEndpoint}}" 
+    insecure = true

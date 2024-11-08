@@ -1,5 +1,5 @@
 questions:
-- variable: queueBlocking
+- variable: blockQueue
   label: "Queue Blocking"
   type: string
   default: "no"

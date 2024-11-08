@@ -18,6 +18,10 @@ spec:
         service: printing-queue 
       annotations:
         checksum/config: '{{ include (print $.Template.BasePath "/printing-queue-cm.yaml") . | sha256sum}}'
+        {{- if eq .Values.blockQueue "yes"}}
+        change/by: "Lead Performasaurus" 
+        change/type: "Premature optimization that should work."
+        {{- end}}
     spec:
       containers:
       - name: printing-queue
@@ -27,8 +31,13 @@ spec:
           value: /etc/app/config.toml
         ports:
         - containerPort: 8080
+        {{ if eq .Values.blockQueue "yes" }}
+        resources:
+          {{- toYaml .Values.printQueueResourcesWhenBlocking | nindent 12 }}   
+        {{ else }}
         resources:
           {{- toYaml .Values.resources | nindent 12 }} 
+        {{ end }} 
         volumeMounts:
         - name: config-volume
           mountPath: /etc/app

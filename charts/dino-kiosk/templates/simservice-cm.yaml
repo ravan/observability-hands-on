@@ -15,6 +15,10 @@ data:
      errorOnCall = 0
      body.status = "success"
      body.msg = "Prediction generated"
+
+     [logging]
+     logOnCall = 1
+     before = "Service is open for business!"
      
      [[endpoints]]
      uri = "/train"

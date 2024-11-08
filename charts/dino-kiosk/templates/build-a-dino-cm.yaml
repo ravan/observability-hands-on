@@ -11,6 +11,10 @@ data:
      address = "0.0.0.0"
      serviceName = "Build-a-Dino"
      logLevel = "info"
+
+     [logging]
+     logOnCall = 1
+     before = "Service is open for business!"
      
      # Endpoints
      [[endpoints]]
@@ -19,6 +23,7 @@ data:
      errorOnCall = 0
      body.status = "success"
      body.msg = "Dino design ready"
+
 
      # Route to AI Model
      [[endpoints.routes]]
@@ -46,11 +51,9 @@ data:
      stopOnFail = true
      
      [endpoints.logging]
+     logOnCall = 1
      before = "Processing [[.Endpoint.Uri]] request"
      beforeLevel = "Info"
-     after = "Completed [[.Endpoint.Uri]] request"
-     afterLevel = "Info"
-     
      
      
      [otel.trace]

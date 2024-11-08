@@ -1,10 +1,10 @@
-queueBlocking: 'no'
+blockQueue: 'no'
 nameOverride: ''
 fullnameOverride: ''
 otelHttpEndpoint: suse-opentelemetry-collector.monitoring.svc.cluster.local:4318
 traceEnabled: true
 metricsEnabled: false
-image: ravan/mockroservice:latest
+image: ravan/mockroservice:0.0.24
 resources:
   requests:
     memory: '15Mi'
@@ -12,3 +12,11 @@ resources:
   limits:
     memory: '18Mi'
     cpu: '20m'
+
+printQueueResourcesWhenBlocking:
+  requests:
+    memory: '50Mi'
+    cpu: '16m'
+  limits:
+    memory: '55Mi'
+    cpu: '18m'

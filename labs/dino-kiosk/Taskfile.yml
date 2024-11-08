@@ -19,7 +19,7 @@ tasks:
           CHART: "{{.CHART_KIOSK}}" 
           NAMESPACE: "{{.NAMESPACE_KIOSK}}" 
           VALUES: |
-                  napping: "no"
+                  blockQueue: "no"
 
   resolve:
     deps: 
@@ -33,7 +33,7 @@ tasks:
           CHART: "{{.CHART_KIOSK}}"
           NAMESPACE: "{{.NAMESPACE_KIOSK}}" 
           VALUES: |
-                  napping: "yes"
+                  blockQueue: "yes"
 
   teardown:
     cmds:

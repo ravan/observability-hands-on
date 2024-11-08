@@ -2,56 +2,65 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: kiosk-web-cm
-  labels:
+  labels: 
     {{- include "common.labels" . | nindent 4 }}
 data:
   config.toml: |
-     # General configuration
-     port = 8080
-     address = "0.0.0.0"
-     serviceName = "KioskWeb"
-     logLevel = "info"
-     
-     # Endpoints
-     [[endpoints]]
-     uri = "/assemble-dino"
-     delay = "50ms"
-     errorOnCall = 0
-     body.status = "success"
-     body.msg = "Dino catalog retrieved"
+    # General configuration
+    port = 8080
+    address = "0.0.0.0"
+    serviceName = "KioskWeb"
+    logLevel = "info"
 
-     # Route to Build-a-Dino
-     [[endpoints.routes]]
-     uri = "build-a-dino/design"
-     delay = "15ms"
-     stopOnFail = true
+    [logging]
+    logOnCall = 1
+    before = "Service is open for business!"
 
-     [[endpoints]]
-     uri = "/place-order"
-     delay = "30ms"
-     errorOnCall = 0
-     body.status = "success"
-     body.msg = "Order placed successfully"
-     
-     # Route to Build-a-Dino
-     [[endpoints.routes]]
-     uri = "build-a-dino/order"
-     delay = "15ms"
-     stopOnFail = true
-     
-     [endpoints.logging]
-     before = "Processing [[.Endpoint.Uri]] request"
-     beforeLevel = "Info"
-     after = "Completed [[.Endpoint.Uri]] request"
-     afterLevel = "Info"
-     
-     [otel.trace]
-     enabled = {{.Values.traceEnabled}}
-     tracer-name = "kiosk-web"
-     http-endpoint = "{{.Values.otelHttpEndpoint}}"
-     insecure = true
+    # Endpoints
+    [[endpoints]]
+    uri = "/assemble-dino"
+    delay = "50ms"
+    errorOnCall = 0
+    body.status = "success"
+    body.msg = "Dino catalog retrieved"
 
-     [otel.metrics]
-     enabled = {{.Values.metricsEnabled}}
-     http-endpoint = "{{.Values.otelHttpEndpoint}}" 
-     insecure = true
+    [endpoints.logging]
+    logOnCall = 60
+    before = "Processing [[.Endpoint.Uri]] request"
+    beforeLevel = "Info"
+
+    # Route to Build-a-Dino
+    [[endpoints.routes]]
+    uri = "build-a-dino/design"
+    delay = "15ms"
+    stopOnFail = true
+
+    [[endpoints]]
+    uri = "/place-order"
+    delay = "30ms"
+    errorOnCall = 0
+    body.status = "success"
+    body.msg = "Order placed successfully"
+
+    # Route to Build-a-Dino
+    [[endpoints.routes]]
+    uri = "build-a-dino/order"
+    delay = "15ms"
+    stopOnFail = true
+
+    [endpoints.logging]
+    before = "Processing [[.Endpoint.Uri]] request"
+    beforeLevel = "Info"
+    after = "Completed [[.Endpoint.Uri]] request"
+    afterLevel = "Info"
+
+    [otel.trace]
+    enabled = {{.Values.traceEnabled}}
+    tracer-name = "kiosk-web"
+    http-endpoint = "{{.Values.otelHttpEndpoint}}"
+    insecure = true
+
+    [otel.metrics]
+    enabled = {{.Values.metricsEnabled}}
+    http-endpoint = "{{.Values.otelHttpEndpoint}}" 
+    insecure = true

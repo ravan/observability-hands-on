@@ -38,6 +38,8 @@ tasks:
   deploy-local-storage:
     cmds:
       - kubectl apply {{.KUBECONFIG}} -f https://raw.githubusercontent.com/rancher/local-path-provisioner/v0.0.30/deploy/local-path-storage.yaml
+      - |-
+        kubectl patch storageclass local-path {{.KUBECONFIG}} -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 
   deploy-otel-agent:
     cmds: 

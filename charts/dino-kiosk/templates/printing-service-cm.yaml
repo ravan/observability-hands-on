@@ -13,6 +13,10 @@ data:
      address = "0.0.0.0"
      serviceName = "Printing Service"
      logLevel = "info"
+
+     [logging]
+     logOnCall = 1
+     before = "Service is open for business!"
      
      # Endpoints
      [[endpoints]]

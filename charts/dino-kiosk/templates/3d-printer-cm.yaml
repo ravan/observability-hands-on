@@ -14,6 +14,10 @@ data:
      serviceName = "3D Printer"
      logLevel = "info"
      
+     [logging]
+     logOnCall = 1
+     before = "Service is open for business!"
+
      # Endpoints
      [[endpoints]]
      uri = "/print-job"
