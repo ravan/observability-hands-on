@@ -1,5 +1,8 @@
 version: '3'
 
+vars:
+  OBSERVABILITY_NS: monitoring # suse-observability
+
 tasks:
   shell-env:
     desc: run 'eval $(local:task shell-env)' to setup local kubectx
@@ -36,20 +39,20 @@ tasks:
     cmds:
       - kubectl apply {{.KUBECONFIG}} -f https://raw.githubusercontent.com/rancher/local-path-provisioner/v0.0.30/deploy/local-path-storage.yaml
 
+  deploy-otel-agent:
+    cmds: 
+      - |-
+        cat <<EOF | helm upgrade --install --create-namespace {{.KUBECONFIG}} --namespace {{.OBSERVABILITY_NS}} -f - suse {{.HELM_REPO}}/suse-observability-otel-collector 
+        apiKey: {{.STS_API_KEY}}
+        otlpHost: {{.STS_OTLP}}
+        clusterName: {{.CLUSTER_NAME}}
+        EOF
+
   deploy-observability-agent:
     cmds:
       - echo "Agent will sent data to '{{.CLUSTER_NAME}}' pipeline on server '{{.STS_URL}}'"
-      - helm upgrade --install {{.KUBECONFIG}} --namespace suse-observability --create-namespace --set-string 'stackstate.apiKey'="{{.STS_API_KEY}}" --set-string 'stackstate.cluster.name'="{{.CLUSTER_NAME}}" --set-string 'stackstate.url'="{{.STS_URL}}/receiver/stsAgent" --set-string 'nodgeAgent.containers.processAgent.resources.limits.cpu'="200m" --set 'clusterAgent.config.topology.collectionInterval'=45 --set 'nodeAgent.skipKubeletTLSVerify'=true suse-observability-agent suse-observability/suse-observability-agent 
+      - helm upgrade --install {{.KUBECONFIG}} --namespace {{.OBSERVABILITY_NS}} --create-namespace --set-string 'stackstate.apiKey'="{{.STS_API_KEY}}" --set-string 'stackstate.cluster.name'="{{.CLUSTER_NAME}}" --set-string 'stackstate.url'="{{.STS_URL}}/receiver/stsAgent" --set-string 'nodgeAgent.containers.processAgent.resources.limits.cpu'="200m" --set 'clusterAgent.config.topology.collectionInterval'=45 --set 'nodeAgent.skipKubeletTLSVerify'=true suse-observability-agent suse-observability/suse-observability-agent 
 
-  deploy-otel-agent:
-    cmds:
-      - kubectl create namespace open-telemetry {{.KUBECONFIG}} --dry-run=client -o yaml | kubectl apply {{.KUBECONFIG}} -f -
-      - kubectl create secret generic open-telemetry-collector --namespace open-telemetry --from-literal=CLUSTER_NAME='{{.CLUSTER_NAME}}' --from-literal=API_KEY='{{.STS_API_KEY}}' --from-literal="OTEL_ENDPOINT={{.OTEL_ENDPOINT}}" --dry-run=client -o yaml | kubectl apply {{.KUBECONFIG}} -f -
-      # - kubectl apply --namespace open-telemetry {{.KUBECONFIG}} -f ./config/jaeger.yaml 
-      - helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
-      - helm repo update
-      - helm upgrade --install {{.KUBECONFIG}} --create-namespace --values ./config/otel-collector.yaml --namespace open-telemetry opentelemetry-collector open-telemetry/opentelemetry-collector
-   
   deploy-observability-agent-extensions:
       cmds:
         - helm repo add sts-ext https://ravan.github.io/helm-charts

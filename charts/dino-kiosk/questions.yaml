@@ -1,0 +1,8 @@
+questions:
+- variable: queueBlocking
+  label: "Queue Blocking"
+  type: string
+  default: "no"
+  description: "Is the queue having performance issues?"
+  required: true
+  group: General

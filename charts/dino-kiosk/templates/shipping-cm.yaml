@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shipping-config
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+data:
+  script.ts: |
+    import http from 'k6/http';
+
+    export const options = {
+      scenarios: {
+          constant_request_rate: {
+              executor: 'constant-arrival-rate',
+              startTime: '60s',
+              rate: 1,
+              timeUnit: '10s', // iterations per second, i.e. 1 RPS
+              duration: '48h',
+              preAllocatedVUs: 5, // how large the initial pool of VUs would be
+              maxVUs: 20, // if the preAllocatedVUs are not enough, we can initialize more
+          },
+      }
+    };
+
+    export default function () {
+     http.get('http://printer-3d/print-job');
+    } 

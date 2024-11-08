@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kiosk-web-cm
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+data:
+  config.toml: |
+     # General configuration
+     port = 8080
+     address = "0.0.0.0"
+     serviceName = "KioskWeb"
+     logLevel = "info"
+     
+     # Endpoints
+     [[endpoints]]
+     uri = "/assemble-dino"
+     delay = "50ms"
+     errorOnCall = 0
+     body.status = "success"
+     body.msg = "Dino catalog retrieved"
+
+     # Route to Build-a-Dino
+     [[endpoints.routes]]
+     uri = "build-a-dino/design"
+     delay = "15ms"
+     stopOnFail = true
+
+     [[endpoints]]
+     uri = "/place-order"
+     delay = "30ms"
+     errorOnCall = 0
+     body.status = "success"
+     body.msg = "Order placed successfully"
+     
+     # Route to Build-a-Dino
+     [[endpoints.routes]]
+     uri = "build-a-dino/order"
+     delay = "15ms"
+     stopOnFail = true
+     
+     [endpoints.logging]
+     before = "Processing [[.Endpoint.Uri]] request"
+     beforeLevel = "Info"
+     after = "Completed [[.Endpoint.Uri]] request"
+     afterLevel = "Info"
+     
+     [otel.trace]
+     enabled = {{.Values.traceEnabled}}
+     tracer-name = "kiosk-web"
+     http-endpoint = "{{.Values.otelHttpEndpoint}}"
+     insecure = true
+
+     [otel.metrics]
+     enabled = {{.Values.metricsEnabled}}
+     http-endpoint = "{{.Values.otelHttpEndpoint}}" 
+     insecure = true

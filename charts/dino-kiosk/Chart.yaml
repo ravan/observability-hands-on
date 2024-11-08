@@ -1,0 +1,9 @@
+apiVersion: v2
+name: dino-kiosk 
+description: A Helm chart for dino-kiosk Mackroservices
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+- challenge
+- observability

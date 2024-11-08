@@ -17,6 +17,9 @@ includes:
 
   dino-diner:
     taskfile: ./dino-diner
+  
+  dino-kiosk:
+    taskfile: ./dino-kiosk
 
 vars:
   NAMESPACE: museum

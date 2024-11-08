@@ -1,0 +1,14 @@
+queueBlocking: 'no'
+nameOverride: ''
+fullnameOverride: ''
+otelHttpEndpoint: suse-opentelemetry-collector.monitoring.svc.cluster.local:4318
+traceEnabled: true
+metricsEnabled: false
+image: ravan/mockroservice:latest
+resources:
+  requests:
+    memory: '15Mi'
+    cpu: '18m'
+  limits:
+    memory: '18Mi'
+    cpu: '20m'

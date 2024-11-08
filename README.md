@@ -18,7 +18,8 @@ This repository contain various kubernetes challenges that showcase's Suse Obser
     - Troubleshoot pending state
 - [Configosaurus](./labs/configosaurus/assignment.md)
     - Troubleshoot application behaviour in relation to config
-
+- [Dino Kiosk](./labs/dino-kiosk/assignment.md)
+    - Troubleshoot traces error rate
 
 ## Prerequisites
 

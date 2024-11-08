@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: loadgen-config
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+data:
+  script.ts: |
+    import http from 'k6/http';
+
+    export const options = {
+      scenarios: {
+          assemble_constant_request_rate: {
+              executor: 'constant-arrival-rate',
+              exec: "placeOrder",
+              startTime: '60s',
+              rate: 1,
+              timeUnit: '10s', // iterations per second, i.e. 1 RPS
+              duration: '48h',
+              preAllocatedVUs: 5, // how large the initial pool of VUs would be
+              maxVUs: 20, // if the preAllocatedVUs are not enough, we can initialize more
+          },
+          order_constant_request_rate: {
+              executor: 'constant-arrival-rate',
+              exec: "browseDino",
+              startTime: '30s',
+              rate: 1,
+              timeUnit: '1s', // 1 iterations per second, i.e. 1 RPS
+              duration: '48h',
+              preAllocatedVUs: 5, // how large the initial pool of VUs would be
+              maxVUs: 20, // if the preAllocatedVUs are not enough, we can initialize more
+          }
+      }
+    };
+
+    export function placeOrder() {
+     http.get('http://kiosk-web/place-order');
+    } 
+
+    export function browseDino() {
+     http.get('http://kiosk-web/assemble-dino');
+    } 
