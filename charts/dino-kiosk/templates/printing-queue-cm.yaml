@@ -59,7 +59,7 @@ data:
     """
     {{ else }}
     [endpoints.logging]
-    logOnCall = 5u # the load test is 1 req/sec
+    logOnCall = 0 # the load test is 1 req/sec
     before = """
     [[ $options := list "Dino job added to the queue. Prehistoric production line is on track!" "Smooth as a T-Rex’s stride! Next print job retrieved and ready for action." "Job successfully passed to the 3D printer. Looks like this dino is one step closer to roaming free!" ]]
     [[ $i := randInt 0 3 ]]
