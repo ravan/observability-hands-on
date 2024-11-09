@@ -1,6 +1,6 @@
 questions:
 - variable: blockQueue
-  label: "Queue Blocking"
+  label: "Block Queue"
   type: string
   default: "no"
   description: "Is the queue having performance issues?"

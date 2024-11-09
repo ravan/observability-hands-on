@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - charts/**
 
 jobs:
   release:
@@ -24,10 +26,77 @@ jobs:
       - name: Install Helm
         uses: azure/setup-helm@v4.2.0
 
-      - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.6.0
-        with:
-          skip_existing: false
-          packages_with_index: true
-        env:
-          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      - name: Package Charts
+        run: |
+          RELEASE=build_releases
+          # Ensure the "$RELEASE" directory is recreated
+          if [ -d "$RELEASE" ]; then
+              echo "Removing existing '$RELEASE' directory..."
+              rm -rf $RELEASE
+          fi
+          mkdir $RELEASE
+
+          # Check if "charts" directory exists
+          if [ ! -d "charts" ]; then
+              echo "Error: 'charts' directory does not exist."
+              exit 1
+          fi
+
+          # Iterate over each directory in "charts"
+          for chart_dir in charts/*/; do
+              # Ensure it's a directory
+              if [ -d "$chart_dir" ]; then
+                  echo "Packaging chart in $chart_dir..."
+                  helm package "$chart_dir" --destination $RELEASE
+              fi
+          done
+
+          mv charts $RELEASE/charts
+
+          echo "All charts packaged successfully in '$RELEASE' directory."
+
+      - name: Prepare to checkout gh-pages branch
+        run: |
+          echo "Will remove directories"
+          find . ! -name build_releases ! -name .git ! -name . -type d -maxdepth 1
+          echo "Removing ..."
+          find . ! -name build_releases ! -name .git ! -name . -type d -maxdepth 1 -exec rm -rf {} +
+          echo "Will remove files"
+          find . -type f -maxdepth 1
+          echo "Removing ..."
+          find . -type f -maxdepth 1 -exec rm -f {} +
+
+      - name: Switch to gh-pages branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -B gh-pages
+
+      - name: Copy packaged charts
+        run: |
+          if [ ! -d "releases" ]; then
+              echo "Creating'releases' directory..."
+              mkdir releases
+          fi
+          if [ -f "index.yaml" ]; then
+              echo "Removing existing 'index.yaml' directory..."
+              rm -rf index.yaml
+          fi
+        
+          mv build_releases/charts charts
+          mv build_releases/* releases
+          rm -rf build_releases
+
+          echo "Indexing charts"
+          helm repo index releases --url https://ravan.github.io/observability-hands-on/releases/
+          mv releases/index.yaml .
+          
+
+      # Step 5: Commit and push changes to gh-pages
+      - name: Commit and push to gh-pages
+        run: |
+          git status
+          git add .
+          git commit -m "Deploy generated files to gh-pages"
+          git push origin gh-pages --force
+
