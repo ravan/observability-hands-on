@@ -84,7 +84,7 @@ jobs:
           fi
         
           mv build_releases/charts charts
-          mv build_releases/* releases
+          mv build_releases/* releases/
           rm -rf build_releases
 
           echo "Indexing charts"

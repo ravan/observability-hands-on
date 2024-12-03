@@ -6,3 +6,11 @@ questions:
   description: "Is the lazy dino waiter sleeping again?"
   required: true
   group: General
+
+- variable: otelHttpEndpoint
+  label: "OTLP"
+  type: string
+  default: "opentelemetry-collector.open-telemetry.svc.cluster.local:4318"
+  description: "Open Telemetry Collector Endpoint"
+  required: true
+  group: General
