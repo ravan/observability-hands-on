@@ -1,0 +1,236 @@
+nodes:
+  - id: -130
+    name: Coal
+    queries:
+      - expression: ( sum(increase((kepler_container_joules_total{ container_namespace="${tags.namespace}", pod_name="${name}"  }[24h:1m]))) * 2.77777777777778e-07 ) * 2.23
+        alias: CO2
+    scope:  type in ("pod") 
+    identifier: urn:stackpack:sustainability:shared:metric-binding:pod-co2-coal
+    unit: short
+    chartType: line
+    tags:
+      experimental_chartType: Gauge
+      enableGaugeChart: "1"
+    priority: high
+    enabled: true
+    layout:
+      metricPerspective:
+        tab: Sustainability
+        section: Carbon Footprint (pounds per kWh per day)
+      componentSummary:
+        weight: 3
+    _type: MetricBinding
+    
+  - id: -140
+    name: Petroleum
+    queries:
+      - expression: ( sum(increase((kepler_container_joules_total{ container_namespace="${tags.namespace}", pod_name="${name}"  }[24h:1m]))) * 2.77777777777778e-07 ) * 2.13
+        alias: CO2
+    scope:  type in ("pod") 
+    identifier: urn:stackpack:sustainability:shared:metric-binding:pod-co2-petroleum
+    unit: short
+    chartType: line
+    tags:
+      experimental_chartType: Gauge
+      enableGaugeChart: "1"
+    priority: high
+    enabled: true
+    layout:
+      metricPerspective:
+        tab: Sustainability
+        section: Carbon Footprint (pounds per kWh per day)
+      componentSummary:
+        weight: 3
+    _type: MetricBinding
+  
+  - id: -150
+    name: Natural Gas
+    queries:
+      - expression: ( sum(increase((kepler_container_joules_total{ container_namespace="${tags.namespace}", pod_name="${name}"  }[24h:1m]))) * 2.77777777777778e-07 ) * 0.91
+        alias: CO2
+    scope:  type in ("pod") 
+    identifier: urn:stackpack:sustainability:shared:metric-binding:pod-co2-natural-gas
+    unit: short
+    chartType: line
+    tags:
+      experimental_chartType: Gauge
+      enableGaugeChart: "1"
+    priority: high
+    enabled: true
+    layout:
+      metricPerspective:
+        tab: Sustainability
+        section: Carbon Footprint (pounds per kWh per day)
+      componentSummary:
+        weight: 3
+    _type: MetricBinding
+    
+  - id: -160
+    name: PKG
+    queries:
+      - expression: sum by (pod_name, container_namespace) (irate(kepler_container_package_joules_total{ container_namespace="${tags.namespace}", pod_name="${name}"  }[1m]))
+        alias: '${pod_name} / ${container_namespace} / PKG'
+    scope:  type in ("pod") 
+    identifier: urn:stackpack:openlit:shared:metric-binding:pod-pod-process-consumption-pkg
+    unit: watt
+    chartType: line
+    priority: high
+    enabled: true
+    layout:
+      metricPerspective:
+        tab: Sustainability
+        section: Pod/Process Power Consumption (W)
+      componentSummary:
+        weight: 3
+    _type: MetricBinding
+    
+  - id: -170
+    name: DRAM
+    queries:
+      - expression: sum by (pod_name, container_namespace) (irate(kepler_container_dram_joules_total{ container_namespace="${tags.namespace}", pod_name="${name}"  }[1m]))
+        alias: '${pod_name} / ${container_namespace} / DRAM'
+    scope:  type in ("pod") 
+    identifier: urn:stackpack:openlit:shared:metric-binding:pod-pod-process-consumption-dram
+    unit: watt
+    chartType: line
+    priority: high
+    enabled: true
+    layout:
+      metricPerspective:
+        tab: Sustainability
+        section: Pod/Process Power Consumption (W)
+      componentSummary:
+        weight: 3
+    _type: MetricBinding
+  
+  - id: -180
+    name: OTHER
+    queries:
+      - expression: sum by (pod_name, container_namespace) (irate(kepler_container_other_joules_total{ container_namespace="${tags.namespace}", pod_name="${name}"  }[1m]))
+        alias: '${pod_name} / ${container_namespace} / OTHER'
+    scope:  type in ("pod") 
+    identifier: urn:stackpack:openlit:shared:metric-binding:pod-pod-process-consumption-other
+    unit: watt
+    chartType: line
+    priority: high
+    enabled: true
+    layout:
+      metricPerspective:
+        tab: Sustainability
+        section: Pod/Process Power Consumption (W)
+      componentSummary:
+        weight: 3
+    _type: MetricBinding
+  
+  - id: -190
+    name: GPU
+    queries:
+      - expression: sum by (pod_name, container_namespace) (irate(kepler_container_gpu_joules_total{ container_namespace="${tags.namespace}", pod_name="${name}"  }[1m]))
+        alias: '${pod_name} / ${container_namespace} / GPU'
+    scope:  type in ("pod") 
+    identifier: urn:stackpack:openlit:shared:metric-binding:pod-pod-process-consumption-gpu
+    unit: watt
+    chartType: line
+    priority: high
+    enabled: true
+    layout:
+      metricPerspective:
+        tab: Sustainability
+        section: Pod/Process Power Consumption (W)
+      componentSummary:
+        weight: 3
+    _type: MetricBinding
+  
+  - id: -200
+    name: Watts 
+    queries:
+      - expression: sum(irate(kepler_container_package_joules_total{ container_namespace="${tags.namespace}", pod_name="${name}"  }[1m]))
+        alias: PKG
+      - expression: sum(irate(kepler_container_dram_joules_total{ container_namespace="${tags.namespace}", pod_name="${name}"  }[1m]))
+        alias: DRAM
+      - expression: sum(irate(kepler_container_other_joules_total{ container_namespace="${tags.namespace}", pod_name="${name}"  }[1m]))
+        alias: OTHER
+      - expression: sum(irate(kepler_container_gpu_joules_total{ container_namespace="${tags.namespace}", pod_name="${name}"  }[1m]))
+        alias: GPU
+    scope:  type in ("pod") 
+    identifier: urn:stackpack:openlit:shared:metric-binding:pod-total-power-consumption-w
+    unit: watt
+    chartType: line
+    priority: high
+    enabled: true
+    layout:
+      metricPerspective:
+        tab: Sustainability
+        section: Total Power Consumption
+      componentSummary:
+        weight: 3
+    _type: MetricBinding
+  
+  - id: -210
+    name: Kilowatt-hour per day
+    queries:
+      - expression: sum (increase((kepler_container_package_joules_total{ container_namespace="${tags.namespace}", pod_name="${name}"  }[24h:1m]))) * 2.77777777777778e-07
+        alias: PKG
+      - expression: sum (increase((kepler_container_dram_joules_total{ container_namespace="${tags.namespace}", pod_name="${name}"  }[24h:1m]))) * 2.77777777777778e-07
+        alias: DRAM
+      - expression: sum (increase((kepler_container_other_joules_total{ container_namespace="${tags.namespace}", pod_name="${name}"  }[24h:1m]))) * 2.77777777777778e-07
+        alias: OTHER
+      - expression: sum (increase((kepler_container_gpu_joules_total{ container_namespace="${tags.namespace}", pod_name="${name}"  }[24h:1m]))) * 2.77777777777778e-07
+        alias: GPU
+    scope:  type in ("pod") 
+    identifier: urn:stackpack:openlit:shared:metric-binding:pod-total-power-consumption-kwh
+    unit: kwatth
+    chartType: line
+    priority: high
+    enabled: true
+    layout:
+      metricPerspective:
+        tab: Sustainability
+        section: Total Power Consumption
+      componentSummary:
+        weight: 3
+    _type: MetricBinding
+  
+  - id: -220
+    name: PKG+DRAM+OTHER+GPU per day by Namespace
+    queries:
+      - expression: sum by (container_namespace) (increase((kepler_container_joules_total{ container_namespace="${tags.namespace}", pod_name="${name}"  }[24h:1m]))) * 2.77777777777778e-07
+        alias: Wh
+    scope:  type in ("pod") 
+    identifier: urn:stackpack:openlit:shared:metric-binding:pod-total-power-consumption-all
+    unit: kwatth
+    chartType: line
+    tags:
+      experimental_chartType: Gauge
+      enableGaugeChart: "1"
+    priority: high
+    enabled: true
+    layout:
+      metricPerspective:
+        tab: Sustainability
+        section: Total Power Consumption
+      componentSummary:
+        weight: 3
+    _type: MetricBinding
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  

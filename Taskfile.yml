@@ -25,6 +25,10 @@ includes:
   server:
     taskfile: ./suse-observability
     dir: ./suse-observability
+  # Tasks to setup other observability agents to test and demo custom bindings
+  other-observer:
+    taskfile: ./other-observers
+    dir: ./other-observers
 
 
 

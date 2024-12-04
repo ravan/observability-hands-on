@@ -1,0 +1,59 @@
+version: '3'
+
+vars:
+  Coal_Coeff: "2.23"
+  Natural_Gas_Coeff: "0.91"
+  Petroleum_Coeff: "2.13"
+  Watt_per_second_to_kWh: "0.000000277777777777778"
+
+tasks:
+
+  upload-metric-bindings:
+    silent: true
+    deps: [generate-metric-bindings]
+    cmds:
+      - sts settings apply -f ./metrics/namespace.yaml --context {{.STS_CONTEXT}}
+      - sts settings apply -f ./metrics/pod.yaml --context {{.STS_CONTEXT}}
+
+  generate-metric-bindings:
+    silent: true
+    internal: true
+    cmds:
+      - echo "Generate namespace bindings"
+      - task: render
+        vars:
+          CTX: |-
+            {
+            "Prefix": "ns",
+            "Coal_Coeff": "{{.Coal_Coeff}}",
+            "Natural_Gas_Coeff": "{{.Natural_Gas_Coeff}}",
+            "Petroleum_Coeff": "{{.Petroleum_Coeff}}",
+            "Watt_per_second_to_kWh": {{.Watt_per_second_to_kWh}},
+            "Filter": "container_namespace=\"${name}\"",
+            "Scope": "type in (\"namespace\")"
+            }
+          TEMPLATE: ./metrics/tpl/kepler_dashboard.tmpl.yaml
+          OUTPUT: ./metrics/namespace.yaml
+      - echo "Generate pod bindings"
+      - task: render
+        vars:
+          CTX: |-
+            {
+            "Prefix": "pod",
+            "Coal_Coeff": "{{.Coal_Coeff}}",
+            "Natural_Gas_Coeff": "{{.Natural_Gas_Coeff}}",
+            "Petroleum_Coeff": "{{.Petroleum_Coeff}}",
+            "Watt_per_second_to_kWh": {{.Watt_per_second_to_kWh}},
+            "Filter": "container_namespace=\"${tags.namespace}\", pod_name=\"${name}\" ",
+            "Scope": "type in (\"pod\")"
+            }
+          TEMPLATE: ./metrics/tpl/kepler_dashboard.tmpl.yaml
+          OUTPUT: ./metrics/pod.yaml
+
+
+  render:
+    silent: true
+    internal: true
+    cmds:
+      - |
+          echo '{{.CTX}}' | gomplate -c .=stdin:///in.json -f {{.TEMPLATE}} -o {{.OUTPUT}}

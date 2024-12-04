@@ -8,4 +8,3 @@ last_server_resp.*
 cloud-kubeconfig
 local/Taskfile.yml
 /gcloud
-other-observers/

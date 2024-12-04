@@ -25,6 +25,7 @@ This repository contain various kubernetes challenges that showcase's Suse Obser
 
 - [Taskfile](https://taskfile.dev/installation/)
     - `task` cli supports tab completion which is handy to see available tasks.
+- [Gomplate](https://docs.gomplate.ca/installing/)
 - [Helm](https://helm.sh/docs/intro/install/)
 - [Lima](https://lima-vm.io/docs/installation/)
 
