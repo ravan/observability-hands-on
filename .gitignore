@@ -1,4 +1,6 @@
 .env
+.env.kubecon
+.env.susecon
 services.toml.mockroservices
 gen.toml.mockroservices
 suse-observability/.cache.json
@@ -6,5 +8,6 @@ local/config/jaeger.yaml
 last_ebpf_conn_server_resp.*
 last_server_resp.*
 cloud-kubeconfig
+susecon-kubeconfig
 local/Taskfile.yml
 /gcloud
